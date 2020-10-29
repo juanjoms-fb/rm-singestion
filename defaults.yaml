@@ -1,0 +1,10 @@
+territories: [AR, BR]
+description: This video sample video
+category: WEB
+monitoring_type: VIDEO_AND_AUDIO
+match_rule_id: ""
+reference_disabled: FALSE
+whitelisted_fb_ids: []
+whitelisted_ig_ids: []
+tags: []
+action: CREATE
