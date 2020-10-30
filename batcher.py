@@ -2,26 +2,60 @@ import os
 import csv
 import yaml
 from pathlib import Path
+import time
 
+
+
+csv_fieldnames = [
+    'Filename',
+    'Territories',
+    'Title',
+    'Description',
+    'Category',
+    'Monitoring Type',
+    'Match Rule ID',
+    'Reference Disabled',
+    'Whitelisted FB IDs',
+    'Whitelisted IG IDs',
+    'Tags',
+    'Action',
+]
+
+valid_video_formats = [
+    ".3g2", ".3gp", ".3gpp",
+    ".asf", ".avi",
+    ".dat", ".divx", ".dv",
+    ".f4v", ".flv",
+    ".gif",
+    ".m2ts", ".m4v", ".mkv", ".mod",
+    ".mov", ".mp4", ".mpe", ".mpeg",
+    ".mpeg4", ".mpg", ".mts",
+    ".nsv",
+    ".ogm", ".ogv",
+    ".qt",
+    ".tod", ".ts",
+    ".vob",
+    ".wmv",
+]
+
+valid_actions = [
+    'CREATE',
+    'UPDATE',
+    'DELETE',
+]
+
+valid_monitoring_types = [
+    'VIDEO_AND_AUDIO',
+    'VIDEO',
+    'AUDIO',
+]
+
+valid_categories = [
+    'WEB',
+]
 
 def is_video_file(file_name):
     f = os.path.splitext(file_name)
-    valid_video_formats = [
-        ".3g2", ".3gp", ".3gpp",
-        ".asf", ".avi",
-        ".dat", ".divx", ".dv",
-        ".f4v", ".flv",
-        ".gif",
-        ".m2ts", ".m4v", ".mkv", ".mod",
-        ".mov", ".mp4", ".mpe", ".mpeg",
-        ".mpeg4", ".mpg", ".mts",
-        ".nsv",
-        ".ogm", ".ogv",
-        ".qt",
-        ".tod", ".ts",
-        ".vob",
-        ".wmv",
-    ]
     return f[-1] in valid_video_formats
 
 
@@ -46,30 +80,22 @@ def get_default_config():
     params['tags'] = convert_list_to_string(params['tags'])
     return params
 
+def rename_directory(directory):
+    print(directory)
+    dest = list(directory.parts)
+    dest[-1] = str(int(time.time()) )
+    directory = directory.rename(os.path.join(*dest))
+    print(directory)
+    return directory
 
-def scan_directory(directory):
+def generate_csv(directory):
 
     print("Generating CSV file in ", directory)
 
     output_file_name = directory.joinpath('video_ingest.csv')
     csvfile = open(output_file_name, 'w+')
 
-    fieldnames = [
-        'Filename',
-        'Territories',
-        'Title',
-        'Description',
-        'Category',
-        'Monitoring Type',
-        'Match Rule ID',
-        'Reference Disabled',
-        'Whitelisted FB IDs',
-        'Whitelisted IG IDs',
-        'Tags',
-        'Action',
-    ]
-
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=',')
+    writer = csv.DictWriter(csvfile, fieldnames=csv_fieldnames, delimiter=',')
     writer.writeheader()
 
     default_params = get_default_config()
@@ -93,17 +119,14 @@ def scan_directory(directory):
 
     csvfile.close()
 
-
     print("CSV file generated in ", output_file_name)
 
 
 def main():
-    videos_dir_path = Path(input("Please introduce the full path to the directory that contains your videos: "))
-
-    while not videos_dir_path.exists():
-        videos_dir_path = Path(input("Invalid path, please try again: "))
-
-    scan_directory(videos_dir_path)
-
+    videos_directory = Path(input("Please introduce the full path to the directory that contains your videos: "))
+    while not videos_directory.exists():
+        videos_directory = Path(input("Invalid path, please try again: "))
+    renamed_videos_directory = rename_directory(videos_directory)
+    generate_csv(renamed_videos_directory)
 
 main()
