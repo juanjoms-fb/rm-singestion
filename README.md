@@ -14,7 +14,7 @@ This scripts allows partners to upload semi-automatically a big number of videos
 
 1. Make sure you have all the prerequisites installed and configured
 
-2. Download and unzip the zip file containing the script and the configuration file
+2. Download and unzip the [script file](script.zip) containing the script and the configuration file
 
 3. Open a terminal/console and use the command `cd path/to/files` to navigate to the directory where you have placed the script and the other files.
 
