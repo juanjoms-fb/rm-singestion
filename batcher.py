@@ -51,7 +51,9 @@ valid_monitoring_types = [
 ]
 
 valid_categories = [
-    'WEB',
+    'EPISODE', 
+    'MOVIE', 
+    'WEB'
 ]
 
 def is_video_file(file_name):

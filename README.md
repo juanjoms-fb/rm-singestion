@@ -32,11 +32,11 @@ This scripts allows partners to upload semi-automatically a big number of videos
 You can review and update your default configuration for the videos in the [defaults.yaml](defaults.yaml) file. This file must contain the following fields with the corresponding values
 
 ```YAML
-territories: [CountryCode1, CountryCode2]
-description: Place your generic description for the videos here
-category: WEB |
-monitoring_type: VIDEO_AND_AUDIO | VIDEO | AUDIO
-match_rule_id: []
+territories: [WW, <COUNTRY_CODE_1>, <COUNTRY_CODE_2>, ...]
+description: <Place your generic description for the videos here>
+category: EPISODE | MOVIE | WEB
+monitoring_type: VIDEO_AND_AUDIO | VIDEO_ONLY | AUDIO_ONLY
+match_rule_id: [<ID_RULE_1>, <ID_RULE_2>, ...]
 reference_disabled: TRUE | FALSE
 whitelisted_fb_ids: []
 whitelisted_ig_ids: []
