@@ -38,8 +38,8 @@ category: EPISODE | MOVIE | WEB
 monitoring_type: VIDEO_AND_AUDIO | VIDEO_ONLY | AUDIO_ONLY
 match_rule_id: [<ID_RULE_1>, <ID_RULE_2>, ...]
 reference_disabled: TRUE | FALSE
-whitelisted_fb_ids: []
-whitelisted_ig_ids: []
-tags: []
+whitelisted_fb_ids: [FB_USER_ID_1, FB_USER_ID_2, ...]
+whitelisted_ig_ids: [IG_USER_ID_1, IG_USER_ID_2, ...]
+tags: [tag1, tag2, ...]
 action: CREATE | UPDATE | DELETE
 ```
