@@ -3,62 +3,11 @@ import csv
 import yaml
 from pathlib import Path
 import time
-
-
-
-csv_fieldnames = [
-    'Filename',
-    'Territories',
-    'Title',
-    'Description',
-    'Category',
-    'Monitoring Type',
-    'Match Rule ID',
-    'Reference Disabled',
-    'Whitelisted FB IDs',
-    'Whitelisted IG IDs',
-    'Tags',
-    'Action',
-]
-
-valid_video_formats = [
-    ".3g2", ".3gp", ".3gpp",
-    ".asf", ".avi",
-    ".dat", ".divx", ".dv",
-    ".f4v", ".flv",
-    ".gif",
-    ".m2ts", ".m4v", ".mkv", ".mod",
-    ".mov", ".mp4", ".mpe", ".mpeg",
-    ".mpeg4", ".mpg", ".mts",
-    ".nsv",
-    ".ogm", ".ogv",
-    ".qt",
-    ".tod", ".ts",
-    ".vob",
-    ".wmv",
-]
-
-valid_actions = [
-    'CREATE',
-    'UPDATE',
-    'DELETE',
-]
-
-valid_monitoring_types = [
-    'VIDEO_AND_AUDIO',
-    'VIDEO',
-    'AUDIO',
-]
-
-valid_categories = [
-    'EPISODE', 
-    'MOVIE', 
-    'WEB'
-]
+import constants
 
 def is_video_file(file_name):
     f = os.path.splitext(file_name)
-    return f[-1] in valid_video_formats
+    return f[-1] in constants.VALID_VIDEO_FORMATS
 
 
 def get_video_title(filename):
@@ -73,9 +22,17 @@ def convert_list_to_string(elements_list):
     return list_string[:-1]
 
 
+def validate_default_params(params):
+    print(params["territories"])
+    for country in params["territories"]:
+        if country not in constants.ISO_ALPHA_2_CODES.values():
+            raise Exception("The country code {} is not valid, please make sure this is an ISO Alpha 2 code".format(country))
+
+
 def get_default_config():
     config = open("./defaults.yaml")
     params = yaml.load(config, Loader=yaml.FullLoader)
+    validate_default_params(params)
     params['territories'] = convert_list_to_string(params['territories'])
     params['whitelisted_fb_ids'] = convert_list_to_string(params['whitelisted_fb_ids'])
     params['whitelisted_ig_ids'] = convert_list_to_string(params['whitelisted_ig_ids'])
@@ -97,7 +54,7 @@ def generate_csv(directory):
     output_file_name = directory.joinpath('video_ingest.csv')
     csvfile = open(output_file_name, 'w+')
 
-    writer = csv.DictWriter(csvfile, fieldnames=csv_fieldnames, delimiter=',')
+    writer = csv.DictWriter(csvfile, fieldnames=constants.CSV_FIELDNAMES, delimiter=',')
     writer.writeheader()
 
     default_params = get_default_config()
@@ -128,7 +85,7 @@ def main():
     videos_directory = Path(input("Please introduce the full path to the directory that contains your videos: "))
     while not videos_directory.exists():
         videos_directory = Path(input("Invalid path, please try again: "))
-    renamed_videos_directory = rename_directory(videos_directory)
-    generate_csv(renamed_videos_directory)
+    generate_csv(videos_directory)
+    rename_directory(videos_directory)
 
 main()

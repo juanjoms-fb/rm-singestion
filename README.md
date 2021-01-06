@@ -32,7 +32,7 @@ This scripts allows partners to upload semi-automatically a big number of videos
 You can review and update your default configuration for the videos in the [defaults.yaml](defaults.yaml) file. This file must contain the following fields with the corresponding values
 
 ```YAML
-territories: [WW, <COUNTRY_CODE_1>, <COUNTRY_CODE_2>, ...]
+territories: [WW, <ISO_ALPHA_2_CODE_1>, <ISO_ALPHA_2_CODE_1>, ...]
 description: <Place your generic description for the videos here>
 category: EPISODE | MOVIE | WEB
 monitoring_type: VIDEO_AND_AUDIO | VIDEO_ONLY | AUDIO_ONLY

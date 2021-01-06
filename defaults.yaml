@@ -1,4 +1,4 @@
-territories: [WW, <COUNTRY_CODE_1>, <COUNTRY_CODE_2>, ...]
+territories: [WW, <ISO_ALPHA_2_CODE_1>, <ISO_ALPHA_2_CODE_1>, ...]
 description: <Place your generic description for the videos here>
 category: EPISODE | MOVIE | WEB
 monitoring_type: VIDEO_AND_AUDIO | VIDEO_ONLY | AUDIO_ONLY
