@@ -1,3 +1,5 @@
-.DS_Store
-videos
 __pycache__
+.DS_Store
+defaults sample.yaml
+defaults template.yaml
+videos

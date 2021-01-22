@@ -36,7 +36,7 @@ territories: [WW, <ISO_ALPHA_2_CODE_1>, <ISO_ALPHA_2_CODE_1>, ...]
 description: <Place your generic description for the videos here>
 category: EPISODE | MOVIE | WEB
 monitoring_type: VIDEO_AND_AUDIO | VIDEO_ONLY | AUDIO_ONLY
-match_rule_id: [<ID_RULE_1>, <ID_RULE_2>, ...]
+match_rule_id: <ID_RULE>
 reference_disabled: TRUE | FALSE
 whitelisted_fb_ids: [FB_USER_ID_1, FB_USER_ID_2, ...]
 whitelisted_ig_ids: [IG_USER_ID_1, IG_USER_ID_2, ...]
