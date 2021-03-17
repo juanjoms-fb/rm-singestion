@@ -1,7 +1,83 @@
-<html>
-<head>
-    <script>
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <title>RMSI CSV Generator</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@material-ui/core@latest/umd/material-ui.production.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/babel-standalone@latest/babel.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+        /* ----- BEGIN: MUI Setup ----- */
+        //Import MUI components
+        const {
+            colors,
+            CssBaseline,
+            ThemeProvider,
+            Typography,
+            Container,
+            makeStyles,
+            createMuiTheme,
+            Box,
+            SvgIcon,
+            Link,
+            Paper,
+            TextField,
+            Button,
+            Select,
+            FormControl,
+            FormHelperText,
+            InputLabel,
+            MenuItem,
+        } = MaterialUI;
+
+        // Create a MUI theme instance.
+        const theme = createMuiTheme({
+            palette: {
+                primary: {
+                    main: '#556cd6',
+                },
+                secondary: {
+                    main: '#19857b',
+                },
+                error: {
+                    main: colors.red.A400,
+                },
+                background: {
+                    default: '#fff',
+                },
+            },
+        });
+
+        const useStyles = makeStyles(theme => ({
+            root: {
+                margin: theme.spacing(6, 0, 3),
+            },
+            mainContainer:{
+                margin: "20px",
+                padding: "20px"
+            },
+            formControl: {
+                margin: theme.spacing(1),
+                minWidth: 180,
+                marginLeft: "10px",
+                marginRight: "10px",
+
+            },
+        }));
+        /* ----- END: MUI Setup ----- */
+
+        /* ----- BEGIN: CSV Helpers ----- */
         const fields={
             filename: {name:"Filename", type:"", default_value:"", required_on_create:true},
             title: {name:"Title", type:"", default_value:"", required_on_create:true},
@@ -82,64 +158,173 @@
             csvContent = processFiles();
             save(csvContent);
         }
+
+        const CATEGORY = {
+            EPISODE: "Episode",
+            MOVIE: "Movie",
+            WEB: "Web",
+        }
+
+        const MONITORING_TYPE = {
+            VIDEO_AND_AUDIO: "Video and audio",
+            VIDEO_ONLY: "Video only",
+            AUDIO_ONLY: "Audio only",
+        }
+        /* ----- END: CSV Helpers ----- */
+
+        /* ----- BEGIN: Form Components ----- */
+        function Files(){
+            return(
+                <span>
+                <label for="video_files">Files:</label>
+                <br/>
+                <input type="file" name="video_files" id="video_files" multiple/>
+                </span>
+            )
+        }
+
+        function Territories(){
+            return(
+                <span>
+                <TextField id="territories" name="territories" label="Territories" variant="outlined" />
+                </span>
+            )
+        }
+
+        function Category(){
+            const classes = useStyles();
+
+            let categories = []
+            for(const category in CATEGORY){
+                categories.push(<MenuItem value={category}>{CATEGORY[category]}</MenuItem>)
+            }
+
+            return(
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="category-label">Category</InputLabel>
+                    <Select
+                    labelId="category-label"
+                    id="category"
+                    name="category"
+                    >
+                    {categories}
+                    </Select>
+                </FormControl>
+            )
+        }
+
+        function MonitoringType(){
+            const classes = useStyles();
+
+            let mtypes = []
+            for(const mtype in MONITORING_TYPE){
+                mtypes.push(<MenuItem value={mtype}>{MONITORING_TYPE[mtype]}</MenuItem>)
+            }
+
+            return(
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="monitoring-type-label">Monitoring Type</InputLabel>
+                    <Select
+                    labelId="monitoring-type-label"
+                    id="monitoring_type"
+                    name="monitoring_type"
+                    >
+                    {mtypes}
+                    </Select>
+                </FormControl>
+            )
+        }
+
+        function MatchRuleId(){
+            return(
+                <span>
+                    <TextField id="match_rule_id" name="match_rule_id" label="match_rule_id"  variant="outlined"/>
+                </span>
+            )
+        }
+
+        function ReferenceDisabled(){
+            return(
+                <span>
+                    <TextField id="reference_disabled" name="reference_disabled" label="reference_disabled" variant="outlined" />
+                </span>
+            )
+        }
+
+        function AllowedFBIds(){
+            return(
+                <span>
+                    <TextField id="whitelisted_fb_ids" name="whitelisted_fb_ids" label="whitelisted_fb_ids" variant="outlined" />
+                </span>
+            )
+        }
+
+        function AllowedIGIds(){
+            return(
+                <span>
+                    <TextField id="whitelisted_ig_ids" name="whitelisted_ig_ids" label="whitelisted_ig_ids" variant="outlined" />
+                </span>
+            )
+        }
+
+        function Tags(){
+            return(
+                <span>
+                    <TextField id="tags" name="tags" label="tags" variant="outlined" />
+                </span>
+            )
+        }
+
+        function Description(){
+            return(
+                <span>
+                    <TextField id="description" name="description" label="description" variant="outlined" />
+                            <br/><br/>
+                </span>
+            )
+        }
+        /* ----- END: Form Components ----- */
+
+        /* ----- BEGIN: React Main App ----- */
+        function App() {
+            const classes = useStyles();
+            return (
+                <Container maxWidth="sm">
+                    <Paper elevation={3}>
+                        <Container className={classes.mainContainer}>
+                        <form>
+
+                            <Files/>
+                            <Territories/>
+                            <Category/>
+                            <MonitoringType/>
+                            <MatchRuleId/>
+                            <ReferenceDisabled/>
+                            <AllowedFBIds/>
+                            <AllowedIGIds/>
+                            <Tags/>
+                            <Description/>
+                            <Button variant="contained" color="primary" onclick="exportCSV()">
+                              Export CSV
+                            </Button>
+                        </form>
+                        </Container>
+                    </Paper>
+                </Container>
+            );
+        }
+
+        ReactDOM.render(
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <App />
+            </ThemeProvider>,
+            document.querySelector('#root'),
+        );
+
+        /* ----- END: React Main App ----- */
+
     </script>
-</head>
-<body>
-
-    <div id="like_button_container"></div>
-
-    <form>
-
-        <label>Files:</label>
-        <input type="file" name="video_files" id="video_files" multiple "/>
-        <br><br>
-
-        <label for="territories">Territories:</label>
-        <input type="text" name="territories" id="territories"/>
-        <br><br>
-
-        <label for="category">Category:</label>
-        <select name="category" id="category">
-            <option value="EPISODE">Episode</option>
-            <option value="MOVIE">Movie</option>
-            <option value="WEB">Web</option>
-        </select>
-        <br><br>
-
-        <label for="monitoring_type">Monitoring Type:</label>
-        <select name="monitoring_type" id="monitoring_type">
-            <option value="VIDEO_AND_AUDIO">Video and audio</option>
-            <option value="VIDEO_ONLY">Video only</option>
-            <option value="AUDIO_ONLY">Audio only</option>
-        </select>
-        <br><br>
-
-        <label for="match_rule_id">Match Rule id:</label>
-        <input type="text" name="match_rule_id" id="match_rule_id"/>
-        <br><br>
-
-        <label for="reference_disabled">Disabled reference:</label>
-        <input type="checkbox" name="reference_disabled" id="reference_disabled" value="false"/>
-        <br><br>
-
-        <label for="whitelisted_fb_ids">Allowed FB ids:</label>
-        <input type="whitelisted_fb_ids" name="whitelisted_fb_ids" id="whitelisted_fb_ids"/>
-        <br><br>
-
-        <label for="whitelisted_ig_ids">Allowed IG ids:</label>
-        <input type="text" name="whitelisted_ig_ids" id="whitelisted_ig_ids"/>
-        <br><br>
-
-        <label for="tags">Tags:</label>
-        <input type="text" name="tags" id="tags"/>
-        <br><br>
-
-        <label for="description">Description:</label><br>
-        <textarea id="description" name="description" rows="4" cols="50"></textarea>
-        <br><br>
-
-        <input type="button" name="saveButton" onclick="exportCSV()" value="Save"/>
-
-    </form>
 </body>
+
 </html>
