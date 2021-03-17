@@ -1,0 +1,145 @@
+<html>
+<head>
+    <script>
+
+        const fields={
+            filename: {name:"Filename", type:"", default_value:"", required_on_create:true},
+            title: {name:"Title", type:"", default_value:"", required_on_create:true},
+            territories: {name:"Territories", type:"", default_value:"", required_on_create:true},
+            description: {name:"Description", type:"", default_value:"", required_on_create:true},
+            category: {name:"Category", type:"", default_value:"", required_on_create:true},
+            monitoring_type: {name:"Monitoring Type", type:"", default_value:"", required_on_create:true},
+            match_rule_id: {name:"Match Rule ID", type:"", default_value:"", required_on_create:true},
+            reference_disabled: {name:"Reference Disabled", type:"", default_value:"", required_on_create:true},
+            whitelisted_fb_ids: {name:"Whitelisted FB IDs", type:"", default_value:"", required_on_create:true},
+            whitelisted_ig_ids: {name:"Whitelisted IG IDs", type:"", default_value:"", required_on_create:true},
+            tags: {name:"Tags", type:"", default_value:"", required_on_create:true},
+            action: {name:"Action", type:"", default_value:"CREATE", required_on_create:true}
+        }
+
+        function processFormField(_field){
+            let field = document.getElementById(_field);
+            if(field !== null){
+                return field.value
+            }
+
+            return fields[_field].default_value;
+
+        }
+
+        function processFiles(){
+            console.log("Files selected...");
+            let values = {};
+            let csvContent = "";
+            for(const f in fields){
+                values[f] = processFormField(f);
+                csvContent+=fields[f].name+",";
+            }
+            csvContent+="\n";
+            console.log("Form values: ", values);
+            console.log("CSV headings: ", csvContent);
+
+            var inp = document.getElementById("video_files");
+            // Access and handle the files
+
+            for (i = 0; i < inp.files.length; i++) {
+                let file = inp.files[i];
+                // do things with file
+                values.filename = file.name;
+                values.title = file.name;
+                for(const f in values){
+                    csvContent+=values[f]+",";
+                }
+                csvContent+="\n";
+                console.log("File", file.name);
+            }
+            console.log("CSV content: ", csvContent);
+            return csvContent;
+        }
+
+        function save(csvContent){
+            console.log("Saving...");
+            let filename = "csv_file.csv";
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = document.createElement("a");
+                if (link.download !== undefined) { // feature detection
+                    // Browsers that support HTML5 download attribute
+                    var url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+        }
+
+        function exportCSV(){
+            csvContent = processFiles();
+            save(csvContent);
+        }
+    </script>
+</head>
+<body>
+
+    <div id="like_button_container"></div>
+
+    <form>
+
+        <label>Files:</label>
+        <input type="file" name="video_files" id="video_files" multiple "/>
+        <br><br>
+
+        <label for="territories">Territories:</label>
+        <input type="text" name="territories" id="territories"/>
+        <br><br>
+
+        <label for="category">Category:</label>
+        <select name="category" id="category">
+            <option value="EPISODE">Episode</option>
+            <option value="MOVIE">Movie</option>
+            <option value="WEB">Web</option>
+        </select>
+        <br><br>
+
+        <label for="monitoring_type">Monitoring Type:</label>
+        <select name="monitoring_type" id="monitoring_type">
+            <option value="VIDEO_AND_AUDIO">Video and audio</option>
+            <option value="VIDEO_ONLY">Video only</option>
+            <option value="AUDIO_ONLY">Audio only</option>
+        </select>
+        <br><br>
+
+        <label for="match_rule_id">Match Rule id:</label>
+        <input type="text" name="match_rule_id" id="match_rule_id"/>
+        <br><br>
+
+        <label for="reference_disabled">Disabled reference:</label>
+        <input type="checkbox" name="reference_disabled" id="reference_disabled" value="false"/>
+        <br><br>
+
+        <label for="whitelisted_fb_ids">Allowed FB ids:</label>
+        <input type="whitelisted_fb_ids" name="whitelisted_fb_ids" id="whitelisted_fb_ids"/>
+        <br><br>
+
+        <label for="whitelisted_ig_ids">Allowed IG ids:</label>
+        <input type="text" name="whitelisted_ig_ids" id="whitelisted_ig_ids"/>
+        <br><br>
+
+        <label for="tags">Tags:</label>
+        <input type="text" name="tags" id="tags"/>
+        <br><br>
+
+        <label for="description">Description:</label><br>
+        <textarea id="description" name="description" rows="4" cols="50"></textarea>
+        <br><br>
+
+        <input type="button" name="saveButton" onclick="exportCSV()" value="Save"/>
+
+    </form>
+</body>
+</html>
