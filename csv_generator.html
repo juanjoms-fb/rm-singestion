@@ -8,7 +8,8 @@
 
     <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@material-ui/core@latest/umd/material-ui.production.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@material-ui/core@latest/umd/material-ui.production.min.js"
+        crossorigin="anonymous"></script>
     <script src="https://unpkg.com/babel-standalone@latest/babel.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
@@ -28,6 +29,7 @@
             Container,
             makeStyles,
             createMuiTheme,
+            useTheme,
             Box,
             SvgIcon,
             Link,
@@ -39,6 +41,12 @@
             FormHelperText,
             InputLabel,
             MenuItem,
+            FormControlLabel,
+            Checkbox,
+            Grid,
+            Input,
+            MenuProps,
+            Chip
         } = MaterialUI;
 
         // Create a MUI theme instance.
@@ -54,86 +62,103 @@
                     main: colors.red.A400,
                 },
                 background: {
-                    default: '#fff',
+                    default: '#f5f5f5',
                 },
             },
         });
 
         const useStyles = makeStyles(theme => ({
+            htmlBody:{
+                background: "#f5f5f5",
+            },
             root: {
                 margin: theme.spacing(6, 0, 3),
             },
-            mainContainer:{
+            mainContainer: {
                 margin: "20px",
                 padding: "20px"
             },
             formControl: {
                 margin: theme.spacing(1),
-                minWidth: 180,
-                marginLeft: "10px",
-                marginRight: "10px",
+                minWidth: 240,
+            },
+            chips: {
+                display: 'flex',
+                flexWrap: 'wrap',
+            },
+            chip: {
+                margin: 2,
+            },
+            chosenCountry: {
+                color: theme.palette.primary.main,
+                background: "blue",
+            },
+            normalCountry: {
 
             },
+            formTitle:{
+                color: theme.palette.primary.main,
+            }
+
         }));
         /* ----- END: MUI Setup ----- */
 
         /* ----- BEGIN: CSV Helpers ----- */
-        const fields={
-            filename: {name:"Filename", type:"", default_value:"", required_on_create:true},
-            title: {name:"Title", type:"", default_value:"", required_on_create:true},
-            territories: {name:"Territories", type:"", default_value:"", required_on_create:true},
-            description: {name:"Description", type:"", default_value:"", required_on_create:true},
-            category: {name:"Category", type:"", default_value:"", required_on_create:true},
-            monitoring_type: {name:"Monitoring Type", type:"", default_value:"", required_on_create:true},
-            match_rule_id: {name:"Match Rule ID", type:"", default_value:"", required_on_create:true},
-            reference_disabled: {name:"Reference Disabled", type:"", default_value:"", required_on_create:true},
-            whitelisted_fb_ids: {name:"Whitelisted FB IDs", type:"", default_value:"", required_on_create:true},
-            whitelisted_ig_ids: {name:"Whitelisted IG IDs", type:"", default_value:"", required_on_create:true},
-            tags: {name:"Tags", type:"", default_value:"", required_on_create:true},
-            action: {name:"Action", type:"", default_value:"CREATE", required_on_create:true}
+        const fields = {
+            filename: { name: "Filename", type: "", default_value: "", required_on_create: true },
+            title: { name: "Title", type: "", default_value: "", required_on_create: true },
+            territories: { name: "Territories", type: "", default_value: "", required_on_create: true },
+            description: { name: "Description", type: "", default_value: "", required_on_create: true },
+            category: { name: "Category", type: "", default_value: "", required_on_create: true },
+            monitoring_type: { name: "Monitoring Type", type: "", default_value: "", required_on_create: true },
+            match_rule_id: { name: "Match Rule ID", type: "", default_value: "", required_on_create: true },
+            reference_disabled: { name: "Reference Disabled", type: "", default_value: "", required_on_create: true },
+            whitelisted_fb_ids: { name: "Whitelisted FB IDs", type: "", default_value: "", required_on_create: true },
+            whitelisted_ig_ids: { name: "Whitelisted IG IDs", type: "", default_value: "", required_on_create: true },
+            tags: { name: "Tags", type: "", default_value: "", required_on_create: true },
+            action: { name: "Action", type: "", default_value: "CREATE", required_on_create: true }
         }
 
-        function processFormField(_field){
+        const processFormField = (_field) => {
             let field = document.getElementById(_field);
-            if(field !== null){
+            if (field !== null) {
                 return field.value
             }
 
             return fields[_field].default_value;
-
         }
 
-        function processFiles(){
+        const processFiles = () => {
             console.log("Files selected...");
             let values = {};
             let csvContent = "";
-            for(const f in fields){
+            for (const f in fields) {
                 values[f] = processFormField(f);
-                csvContent+=fields[f].name+",";
+                csvContent += fields[f].name + ",";
             }
-            csvContent+="\n";
+            csvContent += "\n";
             console.log("Form values: ", values);
             console.log("CSV headings: ", csvContent);
 
             var inp = document.getElementById("video_files");
             // Access and handle the files
 
-            for (i = 0; i < inp.files.length; i++) {
+            for (let i = 0; i < inp.files.length; i++) {
                 let file = inp.files[i];
                 // do things with file
                 values.filename = file.name;
                 values.title = file.name;
-                for(const f in values){
-                    csvContent+=values[f]+",";
+                for (const f in values) {
+                    csvContent += values[f] + ",";
                 }
-                csvContent+="\n";
+                csvContent += "\n";
                 console.log("File", file.name);
             }
             console.log("CSV content: ", csvContent);
             return csvContent;
         }
 
-        function save(csvContent){
+        const save = (csvContent) => {
             console.log("Saving...");
             let filename = "csv_file.csv";
             var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -154,133 +179,245 @@
             }
         }
 
-        function exportCSV(){
-            csvContent = processFiles();
+        const exportCSV = () => {
+            console.log("Exporting CSV file...");
+            let csvContent = processFiles();
             save(csvContent);
         }
 
-        const CATEGORY = {
-            EPISODE: "Episode",
-            MOVIE: "Movie",
-            WEB: "Web",
-        }
-
-        const MONITORING_TYPE = {
-            VIDEO_AND_AUDIO: "Video and audio",
-            VIDEO_ONLY: "Video only",
-            AUDIO_ONLY: "Audio only",
-        }
         /* ----- END: CSV Helpers ----- */
 
         /* ----- BEGIN: Form Components ----- */
-        function Files(){
-            return(
-                <span>
-                <label for="video_files">Files:</label>
-                <br/>
-                <input type="file" name="video_files" id="video_files" multiple/>
-                </span>
-            )
-        }
 
-        function Territories(){
-            return(
-                <span>
-                <TextField id="territories" name="territories" label="Territories" variant="outlined" />
-                </span>
-            )
-        }
-
-        function Category(){
+        function Heading(){
             const classes = useStyles();
+            return(
+                <Typography variant="h4" className={classes.formTitle} gutterBottom>
+                    RMSI - CSV Generator
+                </Typography>
+            )
+        }
+
+        function Files() {
+            const classes = useStyles();
+            return (
+                <FormControl variant="outlined" className={classes.formControl}>
+                    <label for="video_files">Files:</label>
+                    <input type="file" name="video_files" id="video_files" multiple />
+                </FormControl>
+            )
+        }
+
+        function Territories() {
+
+            const COUNTRIES = {
+                WW: "World Wide",
+                AF: "Afghanistan",
+                AL: "Albania",
+                DZ: "Algeria",
+                AS: "American Samoa",
+                AD: "Andorra",
+                AO: "Angola",
+                AI: "Anguilla",
+                AQ: "Antarctica",
+                AG: "Antigua and Barbuda",
+                AR: "Argentina",
+                AM: "Armenia",
+                AW: "Aruba",
+                AU: "Australia",
+                AT: "Austria",
+                AZ: "Azerbaijan",
+            };
+
+            function getClassName(country) {
+                return (
+                    territoryName.indexOf(country) === -1
+                        ? classes.normalCountry
+                        : classes.chosenCountry
+                );
+            }
+
+            const classes = useStyles();
+            const [territoryName, setTerritoryName] = React.useState([]);
+
+            const handleChange = (event) => {
+                setTerritoryName(event.target.value);
+            };
+
+            const handleChangeMultiple = (event) => {
+                const { options } = event.target;
+                const value = [];
+                for (let i = 0, l = options.length; i < l; i += 1) {
+                    if (options[i].selected) {
+                        value.push(options[i].value);
+                    }
+                }
+                setTerritoryName(value);
+            };
+
+            let countries = []
+            for (const country in COUNTRIES) {
+                countries.push(
+                    <MenuItem key={country} value={country}
+                        className={getClassName(country)}>
+                        {COUNTRIES[country]}
+                    </MenuItem>
+                );
+            }
+
+
+            return (
+
+                <div>
+                    <FormControl variant="outlined" className={classes.formControl}>
+                        <InputLabel id="territories-label">Territories</InputLabel>
+                        <Select
+                            labelId="territories-label"
+                            id="territories"
+                            name="territories"
+                            multiple
+                            value={territoryName}
+                            onChange={handleChange}
+                            input={<Input id="select-multiple-chip" />}
+                            renderValue={(selected) => (
+                                <div className={classes.chips}>
+                                    {selected.map((value) => (
+                                        <Chip key={value} label={value} className={classes.chip} />
+                                    ))}
+                                </div>
+                            )}
+                            MenuProps={MenuProps}
+                        >
+                            {countries}
+                        </Select>
+                    </FormControl>
+                </div>
+
+            )
+        }
+
+        function Category() {
+            const classes = useStyles();
+            const CATEGORY = {
+                EPISODE: "Episode",
+                MOVIE: "Movie",
+                WEB: "Web",
+            }
+
 
             let categories = []
-            for(const category in CATEGORY){
+            for (const category in CATEGORY) {
                 categories.push(<MenuItem value={category}>{CATEGORY[category]}</MenuItem>)
             }
 
-            return(
-                <FormControl className={classes.formControl}>
+            return (
+                <FormControl variant="outlined" className={classes.formControl}>
                     <InputLabel id="category-label">Category</InputLabel>
                     <Select
-                    labelId="category-label"
-                    id="category"
-                    name="category"
+                        labelId="category-label"
+                        id="category"
+                        name="category"
                     >
-                    {categories}
+                        {categories}
                     </Select>
                 </FormControl>
             )
         }
 
-        function MonitoringType(){
-            const classes = useStyles();
-
-            let mtypes = []
-            for(const mtype in MONITORING_TYPE){
-                mtypes.push(<MenuItem value={mtype}>{MONITORING_TYPE[mtype]}</MenuItem>)
+        function MonitoringType() {
+            const MONITORING_TYPE = {
+                VIDEO_AND_AUDIO: "Video and audio",
+                VIDEO_ONLY: "Video only",
+                AUDIO_ONLY: "Audio only",
             }
 
-            return(
-                <FormControl className={classes.formControl}>
+            const classes = useStyles();
+
+            let monitoring_types = []
+            for (const mtype in MONITORING_TYPE) {
+                monitoring_types.push(<MenuItem value={mtype}>{MONITORING_TYPE[mtype]}</MenuItem>)
+            }
+
+            return (
+                <FormControl variant="outlined" className={classes.formControl}>
                     <InputLabel id="monitoring-type-label">Monitoring Type</InputLabel>
                     <Select
-                    labelId="monitoring-type-label"
-                    id="monitoring_type"
-                    name="monitoring_type"
+                        labelId="monitoring-type-label"
+                        id="monitoring_type"
+                        name="monitoring_type"
                     >
-                    {mtypes}
+                        {monitoring_types}
                     </Select>
                 </FormControl>
             )
         }
 
-        function MatchRuleId(){
-            return(
-                <span>
-                    <TextField id="match_rule_id" name="match_rule_id" label="match_rule_id"  variant="outlined"/>
-                </span>
+        function ReferenceDisabled() {
+            const classes = useStyles();
+            return (
+                <FormControl className={classes.formControl}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                name="reference_disabled"
+                                color="primary"
+                            />
+                        }
+                        label="Reference Disabled"
+                    />
+                </FormControl>
             )
         }
 
-        function ReferenceDisabled(){
-            return(
-                <span>
-                    <TextField id="reference_disabled" name="reference_disabled" label="reference_disabled" variant="outlined" />
-                </span>
+        function MatchRuleId() {
+            const classes = useStyles();
+            return (
+                <FormControl className={classes.formControl}>
+                    <TextField id="match_rule_id" name="match_rule_id" label="match_rule_id" variant="outlined" />
+                </FormControl>
             )
         }
 
-        function AllowedFBIds(){
-            return(
-                <span>
+        function AllowedFBIds() {
+            const classes = useStyles();
+            return (
+                <FormControl className={classes.formControl}>
                     <TextField id="whitelisted_fb_ids" name="whitelisted_fb_ids" label="whitelisted_fb_ids" variant="outlined" />
-                </span>
+                </FormControl>
             )
         }
 
-        function AllowedIGIds(){
-            return(
-                <span>
+        function AllowedIGIds() {
+            const classes = useStyles();
+            return (
+                <FormControl className={classes.formControl}>
                     <TextField id="whitelisted_ig_ids" name="whitelisted_ig_ids" label="whitelisted_ig_ids" variant="outlined" />
-                </span>
+                </FormControl>
             )
         }
 
-        function Tags(){
-            return(
-                <span>
+        function Tags() {
+            const classes = useStyles();
+            return (
+                <FormControl className={classes.formControl}>
                     <TextField id="tags" name="tags" label="tags" variant="outlined" />
-                </span>
+                </FormControl>
             )
         }
 
-        function Description(){
-            return(
-                <span>
-                    <TextField id="description" name="description" label="description" variant="outlined" />
-                            <br/><br/>
-                </span>
+        function Description() {
+            const classes = useStyles();
+            return (
+                <FormControl className={classes.formControl}>
+                    <TextField
+                        id="description"
+                        label="Description"
+                        multiline
+                        rows={4}
+                        defaultValue="Generic description for your files"
+                        variant="outlined"
+                    />
+                </FormControl>
             )
         }
         /* ----- END: Form Components ----- */
@@ -289,27 +426,56 @@
         function App() {
             const classes = useStyles();
             return (
+                <Container maxWidth="b" className={classes.htmlBody}>
                 <Container maxWidth="sm">
                     <Paper elevation={3}>
-                        <Container className={classes.mainContainer}>
-                        <form>
-
-                            <Files/>
-                            <Territories/>
-                            <Category/>
-                            <MonitoringType/>
-                            <MatchRuleId/>
-                            <ReferenceDisabled/>
-                            <AllowedFBIds/>
-                            <AllowedIGIds/>
-                            <Tags/>
-                            <Description/>
-                            <Button variant="contained" color="primary" onclick="exportCSV()">
-                              Export CSV
-                            </Button>
-                        </form>
-                        </Container>
+                        <Grid
+                            container
+                            direction="column"
+                            justify="center"
+                            alignItems="center"
+                            className={classes.mainContainer}>
+                            <Grid item xs>
+                                <Heading/>
+                            </Grid>
+                            <Grid item xs>
+                                <Files />
+                            </Grid>
+                            <Grid item xs>
+                                <Territories />
+                            </Grid>
+                            <Grid item xs>
+                                <Category />
+                            </Grid>
+                            <Grid item xs>
+                                <MonitoringType />
+                            </Grid>
+                            <Grid item xs>
+                                <MatchRuleId />
+                            </Grid>
+                            <Grid item xs>
+                                <ReferenceDisabled />
+                            </Grid>
+                            <Grid item xs>
+                                <AllowedFBIds />
+                            </Grid>
+                            <Grid item xs>
+                                <AllowedIGIds />
+                            </Grid>
+                            <Grid item xs>
+                                <Tags />
+                            </Grid>
+                            <Grid item xs>
+                                <Description />
+                            </Grid>
+                            <Grid item xs>
+                                <Button variant="contained" color="primary" onClick={exportCSV}>
+                                    Export CSV
+                                </Button>
+                            </Grid>
+                        </Grid>
                     </Paper>
+                </Container>
                 </Container>
             );
         }
