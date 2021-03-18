@@ -126,6 +126,12 @@
                 display: "inline-block",
                 padding: "6px 12px",
                 cursor: "pointer",
+                color: "rgba(0, 0, 0, 0.54)",
+                fontSize: "1rem",
+                fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+                fontWeight: "400",
+                lineHeight: "1",
+                letterSpacing: "0.00938em",
             },
             files: {
                 border: "none 0px",
@@ -251,7 +257,7 @@
 
             return (
                 <FormControl variant="outlined" className={classes.formControlOutlined}>
-                    <label for="video_files" className={classes.filesLabel}>Files *: {filesCount}</label>
+                    <label for="video_files" className={classes.filesLabel}>Files *<br/> {filesCount}</label>
                     <input
                     type="file"
                     name="video_files"
@@ -575,12 +581,6 @@
                     </Typography>
                 </Container>
                 <List component="nav" aria-label="main mailbox folders">
-                    <ListItemLink href="https://developers.facebook.com/docs/rights-manager-video/csv-validator">
-                        <ListItemIcon>
-                            <Icon className={classes.icon}>done</Icon>
-                        </ListItemIcon>
-                        <ListItemText primary="CSV Validator" />
-                    </ListItemLink>
                     <ListItemLink href="https://github.com/juanjoms-fb/rm-singestion/raw/main/RMSI%20Documentation.pdf">
                         <ListItemIcon>
                             <Icon className={classes.icon}>article</Icon>
@@ -592,6 +592,24 @@
                             <Icon className={classes.icon}>alternate_email</Icon>
                         </ListItemIcon>
                         <ListItemText primary="Support" />
+                    </ListItemLink>
+                    <ListItemLink href="https://www.ssh.com/ssh/keygen/">
+                        <ListItemIcon>
+                            <Icon className={classes.icon}>vpn_key</Icon>
+                        </ListItemIcon>
+                        <ListItemText primary="Generate Keys" />
+                    </ListItemLink>
+                    <ListItemLink href="https://developers.facebook.com/docs/rights-manager-video/csv-validator">
+                        <ListItemIcon>
+                            <Icon className={classes.icon}>done</Icon>
+                        </ListItemIcon>
+                        <ListItemText primary="CSV Validator" />
+                    </ListItemLink>
+                    <ListItemLink href="https://raw.githubusercontent.com/juanjoms-fb/rm-singestion/main/__complete__">
+                        <ListItemIcon>
+                            <Icon className={classes.icon}>upload_file</Icon>
+                        </ListItemIcon>
+                        <ListItemText primary="Completion Manifest" />
                     </ListItemLink>
                 </List>
                 </Paper>
