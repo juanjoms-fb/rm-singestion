@@ -8,7 +8,8 @@
 
     <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@material-ui/core@latest/umd/material-ui.production.min.js"crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@material-ui/core@latest/umd/material-ui.production.min.js"
+        crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
@@ -75,7 +76,7 @@
 
         // Create styles/classes.
         const useStyles = makeStyles(theme => ({
-            htmlBody:{
+            htmlBody: {
                 background: "#f5f5f5",
             },
             root: {
@@ -108,7 +109,7 @@
             normalCountry: {
 
             },
-            formTitle:{
+            formTitle: {
                 color: theme.palette.primary.main,
             },
             formControlOutlined: {
@@ -118,7 +119,7 @@
                 border: "1px solid lightGray",
                 borderRadius: "4px",
             },
-            filesButton:{
+            filesButton: {
                 display: "none",
             },
             filesLabel: {
@@ -144,18 +145,18 @@
 
         /* ----- BEGIN: CSV Helpers ----- */
         const fields = {
-            filename: { name: "Filename", type: "", default_value: ""},
-            title: { name: "Title", type: "", default_value: ""},
-            territories: { name: "Territories", type: "", default_value: ""},
-            description: { name: "Description", type: "", default_value: ""},
-            category: { name: "Category", type: "", default_value: ""},
-            monitoring_type: { name: "Monitoring Type", type: "", default_value: ""},
-            match_rule_id: { name: "Match Rule ID", type: "", default_value: ""},
-            reference_disabled: { name: "Reference Disabled", type: "", default_value: ""},
-            whitelisted_fb_ids: { name: "Whitelisted FB IDs", type: "", default_value: ""},
-            whitelisted_ig_ids: { name: "Whitelisted IG IDs", type: "", default_value: ""},
-            tags: { name: "Tags", type: "", default_value: ""},
-            action: { name: "Action", type: "", default_value: "CREATE"}
+            filename: { name: "Filename", type: "", default_value: "" },
+            title: { name: "Title", type: "", default_value: "" },
+            territories: { name: "Territories", type: "", default_value: "" },
+            description: { name: "Description", type: "", default_value: "" },
+            category: { name: "Category", type: "", default_value: "" },
+            monitoring_type: { name: "Monitoring Type", type: "", default_value: "" },
+            match_rule_id: { name: "Match Rule ID", type: "", default_value: "" },
+            reference_disabled: { name: "Reference Disabled", type: "", default_value: "" },
+            whitelisted_fb_ids: { name: "Whitelisted FB IDs", type: "", default_value: "" },
+            whitelisted_ig_ids: { name: "Whitelisted IG IDs", type: "", default_value: "" },
+            tags: { name: "Tags", type: "", default_value: "" },
+            action: { name: "Action", type: "", default_value: "CREATE" }
         }
 
         const processFormField = (_field) => {
@@ -166,7 +167,7 @@
             return fields[_field].default_value;
         }
 
-        const getVideoTitle = (video) =>{
+        const getVideoTitle = (video) => {
             const index = video.lastIndexOf(".");
             const title = video.substring(0, index);
             let str = title.toLowerCase().split(' ');
@@ -192,7 +193,7 @@
                 values.filename = file.name;
                 values.title = getVideoTitle(file.name);
                 for (const f in values) {
-                    csvContent += "\""+values[f] + "\",";
+                    csvContent += "\"" + values[f] + "\",";
                 }
                 csvContent += "\n";
             }
@@ -228,17 +229,28 @@
         }
 
         const handleChange = (event) => {
-            let event_id=event.target.name;
+            let event_id = event.target.name;
             document.getElementById(event_id).value = event.target.value;
         };
+
+        const validate = () =>{
+            const value = document.getElementById("video_files").value
+            if(value===null || value==="" || value===undefined || value.length===0){
+                setError(true);
+                setHelperText("You must select at least 1 video file");
+            }else{
+                setError(false);
+                setHelperText("")
+            }
+        }
 
         /* ----- END: CSV Helpers ----- */
 
         /* ----- BEGIN: Form Components ----- */
 
-        function Heading(){
+        function Heading() {
             const classes = useStyles();
-            return(
+            return (
                 <Typography variant="h4" className={classes.formTitle} gutterBottom>
                     RMSI - CSV Generator
                 </Typography>
@@ -248,25 +260,41 @@
         function Files() {
             const classes = useStyles();
             const [filesCount, setFilesCount] = React.useState(0);
+            const [error, setError] = React.useState(false);
+            const [helperText, setHelperText] = React.useState("");
 
-            const onChangeFiles = ()=>{
+            const validate = () =>{
+                const value = document.getElementById("video_files").value
+                if(value===null || value==="" || value===undefined || value.length===0){
+                    setError(true);
+                    setHelperText("You must select at least 1 video file");
+                }else{
+                    setError(false);
+                    setHelperText("")
+                }
+            }
+
+            const onChangeFiles = () => {
                 var videos = document.getElementById("video_files");
                 setFilesCount(videos.files.length)
-
+                validate()
             }
 
             return (
                 <FormControl variant="outlined" className={classes.formControlOutlined}>
-                    <label for="video_files" className={classes.filesLabel}>Files *<br/> {filesCount}</label>
+                    <label for="video_files" className={classes.filesLabel} onBlur={validate}>
+                        Files *<br /> {filesCount}</label>
                     <input
-                    type="file"
-                    name="video_files"
-                    id="video_files"
-                    multiple
-                    required
-                    accept=".vid"
-                    className={classes.filesButton}
-                    onChange={onChangeFiles}/>
+                        type="file"
+                        name="video_files"
+                        id="video_files"
+                        multiple
+                        required
+                        accept=".3g2,.3gp,.3gpp,.asf,.avi,.dat,.divx,.dv,.f4v,.flv,.gif,.m2ts,.m4v,.mkv,.mod,.mov,.mp4,.mpe,.mpeg,.mpeg4,.mpg,.mts,.nsv,.ogm,.ogv,.qt,.tod,.ts,.vob,.wmv"
+                        className={classes.filesButton}
+                        onChange={onChangeFiles}
+                        onBlur={validate}/>
+                    <FormHelperText>{helperText}</FormHelperText>
                 </FormControl>
             )
         }
@@ -275,6 +303,8 @@
             const classes = useStyles();
             const [territoryName, setTerritoryName] = React.useState([]);
             const [countries, setCountries] = React.useState({});
+            const [error, setError] = React.useState(false);
+            const [helperText, setHelperText] = React.useState("");
 
             React.useEffect(() => {
                 async function getCountries() {
@@ -286,7 +316,7 @@
                     const results = Papa.parse(csv, { header: false }) // object with { data, errors, meta }
                     const rows = results.data // array of objects
                     let c = {}
-                    rows.forEach( e=>{
+                    rows.forEach(e => {
                         c[e[0]] = e[1];
                     })
                     setCountries(c)
@@ -302,9 +332,26 @@
                 );
             }
 
+            const validate=()=>{
+                const value = document.getElementById("territories").value
+                if(value===null || value==="" || value===undefined || value.length===0){
+                    setError(true);
+                    setHelperText("You must select at least 1 territory");
+                }else{
+                    setError(false);
+                    setHelperText("")
+                }
+            }
+
             const handleChangeTerritories = (event) => {
-                setTerritoryName(event.target.value);
-                document.getElementById("territories").value = event.target.value;
+                const newTerritories = event.target.value;
+                if (newTerritories.length === 0 || newTerritories===undefined) {
+                    setError(true);
+                    setHelperText("You must select at least 1 territory");
+                }
+                setTerritoryName(newTerritories);
+                document.getElementById("territories").value = newTerritories;
+                validate();
             };
 
             const populateCountryList = () => {
@@ -327,8 +374,10 @@
                         labelId="territories-label"
                         multiple
                         required
+                        error={error}
                         value={territoryName}
                         onChange={handleChangeTerritories}
+                        onBlur={validate}
                         input={<Input id="select-multiple-chip" />}
                         renderValue={(selected) => (
                             <div className={classes.chips}>
@@ -341,13 +390,16 @@
                     >
                         {populateCountryList()}
                     </Select>
-                    <input type="hidden" id="territories" name="territories"/>
+                    <FormHelperText>{helperText}</FormHelperText>
+                    <input type="hidden" id="territories" name="territories" />
                 </FormControl>
             )
         }
 
         function Category() {
             const classes = useStyles();
+            const [error, setError] = React.useState(false);
+            const [helperText, setHelperText] = React.useState("");
 
             const CATEGORY = {
                 EPISODE: "Episode",
@@ -355,10 +407,30 @@
                 WEB: "Web",
             }
 
-            let categories = []
-            for (const category_key in CATEGORY) {
-                categories.push(<MenuItem value={category_key}>{CATEGORY[category_key]}</MenuItem>)
+            const populateCategoriesList=()=>{
+                let categories = []
+                for (const category_key in CATEGORY) {
+                    categories.push(<MenuItem value={category_key}>{CATEGORY[category_key]}</MenuItem>)
+                }
+                return categories;
             }
+
+            const validate=()=>{
+                const value = document.getElementById("category").value
+                if(value===null || value==="" || value===undefined){
+                    setError(true);
+                    setHelperText("You must select a category");
+                }else{
+                    setError(false);
+                    setHelperText("")
+                }
+            }
+
+            const handleChange = (event) => {
+                let event_id = event.target.name;
+                document.getElementById(event_id).value = event.target.value;
+                validate();
+            };
 
             return (
                 <FormControl variant="outlined" className={classes.formControl}>
@@ -368,27 +440,52 @@
                         id="category"
                         name="category"
                         required
+                        error={error}
                         onChange={handleChange}
+                        onBlur={validate}
                     >
-                        {categories}
+                        {populateCategoriesList()}
                     </Select>
+                    <FormHelperText>{helperText}</FormHelperText>
                 </FormControl>
             )
         }
 
         function MonitoringType() {
+            const classes = useStyles();
+            const [error, setError] = React.useState(false);
+            const [helperText, setHelperText] = React.useState("");
+
             const MONITORING_TYPE = {
                 VIDEO_AND_AUDIO: "Video and audio",
                 VIDEO_ONLY: "Video only",
                 AUDIO_ONLY: "Audio only",
             }
 
-            const classes = useStyles();
-
-            let monitoring_types = []
-            for (const mtype in MONITORING_TYPE) {
-                monitoring_types.push(<MenuItem value={mtype}>{MONITORING_TYPE[mtype]}</MenuItem>)
+            const populateTypeList = ()=>{
+                let monitoring_types = []
+                for (const mtype in MONITORING_TYPE) {
+                    monitoring_types.push(<MenuItem value={mtype}>{MONITORING_TYPE[mtype]}</MenuItem>)
+                }
+                return monitoring_types;
             }
+
+            const validate=()=>{
+                const value = document.getElementById("monitoring_type").value
+                if(value===null || value==="" || value===undefined){
+                    setError(true);
+                    setHelperText("You must select a type");
+                }else{
+                    setError(false);
+                    setHelperText("")
+                }
+            }
+
+            const handleChange = (event) => {
+                let event_id = event.target.name;
+                document.getElementById(event_id).value = event.target.value;
+                validate();
+            };
 
             return (
                 <FormControl variant="outlined" className={classes.formControl}>
@@ -398,10 +495,13 @@
                         id="monitoring_type"
                         name="monitoring_type"
                         required
+                        error={error}
                         onChange={handleChange}
+                        onBlur={validate}
                     >
-                        {monitoring_types}
+                        {populateTypeList()}
                     </Select>
+                    <FormHelperText>{helperText}</FormHelperText>
                 </FormControl>
             )
         }
@@ -410,7 +510,7 @@
             const classes = useStyles();
             const [checked, setChecked] = React.useState(false);
 
-            const handleChecked = (event) => {
+            const handleChange = (event) => {
                 setChecked(event.target.checked);
                 document.getElementById("reference_disabled").value = event.target.checked;
             };
@@ -422,41 +522,83 @@
                             <Checkbox
                                 color="primary"
                                 checked={checked}
-                                onChange={handleChecked}
+                                onChange={handleChange}
                             />
                         }
                         label="Reference Disabled"
                     />
-                    <input type="hidden" id="reference_disabled" name="reference_disabled" value="false"/>
+                    <input type="hidden" id="reference_disabled" name="reference_disabled" value="false" />
                 </FormControl>
             )
         }
 
         function MatchRuleId() {
             const classes = useStyles();
+            const [error, setError] = React.useState(false);
+            const [helperText, setHelperText] = React.useState("");
+
+            const validate = () =>{
+                const value = document.getElementById("match_rule_id").value
+                var reg = new RegExp('^\\d+$');
+                if(value===null || value==="" || value===undefined || value.length===0 ||
+                    !reg.test(value)
+                ){
+                    setError(true);
+                    setHelperText("Rule id must numeric");
+                }else{
+                    setError(false);
+                    setHelperText("")
+                }
+            }
+
             return (
                 <FormControl className={classes.formControl}>
                     <TextField
-                    id="match_rule_id"
-                    name="match_rule_id"
-                    label="Match Rule Id"
-                    variant="outlined"
-                    required/>
+                        id="match_rule_id"
+                        name="match_rule_id"
+                        label="Match Rule Id"
+                        variant="outlined"
+                        error={error}
+                        helperText={helperText}
+                        onBlur={validate}
+                        onChange={validate}
+                        required />
                 </FormControl>
             )
         }
 
         function AllowedFBIds() {
             const classes = useStyles();
+            const defaultHelperText = "id1,id2,..."
+            const [error, setError] = React.useState(false);
+            const [helperText, setHelperText] = React.useState(defaultHelperText);
+
+            const validate = () =>{
+                const value = document.getElementById("whitelisted_fb_ids").value
+                var reg = new RegExp("^(?:[0-9]+,)*[0-9]+(?:\.[0-9]+)?$");
+                if(value!=="" && !reg.test(value)){
+                    setError(true);
+                    setHelperText("Numeric ids separated by comma");
+                }else{
+                    setError(false);
+                    setHelperText(defaultHelperText)
+                }
+            }
+
             return (
                 <FormControl className={classes.formControl}>
                     <TextField
-                    id="whitelisted_fb_ids"
-                    name="whitelisted_fb_ids"
-                    label="Allowed FB ids"
-                    variant="outlined"
-                    defaultValue=""
-                    helperText="id1,id2,..."
+                        id="whitelisted_fb_ids"
+                        name="whitelisted_fb_ids"
+                        label="Allowed FB ids"
+                        variant="outlined"
+                        defaultValue=""
+                        multiline
+                        rows={3}
+                        error={error}
+                        helperText={helperText}
+                        onChange={validate}
+                        onBlur={validate}
                     />
                 </FormControl>
             )
@@ -464,15 +606,36 @@
 
         function AllowedIGIds() {
             const classes = useStyles();
+            const defaultHelperText = "id1,id2,..."
+            const [error, setError] = React.useState(false);
+            const [helperText, setHelperText] = React.useState(defaultHelperText);
+
+            const validate = () =>{
+                const value = document.getElementById("whitelisted_ig_ids").value
+                var reg = new RegExp("^(?:[0-9]+,)*[0-9]+(?:\.[0-9]+)?$");
+                if(value!=="" && !reg.test(value)){
+                    setError(true);
+                    setHelperText("Numeric ids separated by comma");
+                }else{
+                    setError(false);
+                    setHelperText(defaultHelperText)
+                }
+            }
+
             return (
                 <FormControl className={classes.formControl}>
                     <TextField
-                    id="whitelisted_ig_ids"
-                    name="whitelisted_ig_ids"
-                    label="Allowed IG ids"
-                    variant="outlined"
-                    defaultValue=""
-                    helperText="id1,id2,..."
+                        id="whitelisted_ig_ids"
+                        name="whitelisted_ig_ids"
+                        label="Allowed IG ids"
+                        variant="outlined"
+                        defaultValue=""
+                        multiline
+                        rows={3}
+                        error={error}
+                        helperText={helperText}
+                        onChange={validate}
+                        onBlur={validate}
                     />
                 </FormControl>
             )
@@ -480,15 +643,36 @@
 
         function Tags() {
             const classes = useStyles();
+            const defaultHelperText = "tag 1,tag 2,..."
+            const [error, setError] = React.useState(false);
+            const [helperText, setHelperText] = React.useState(defaultHelperText);
+
+            const validate = () =>{
+                const value = document.getElementById("tags").value
+                var reg = new RegExp("^(?:[a-zA-Z0-9_ ]+,)*[a-zA-Z0-9_ ]+(?:\.[a-zA-Z0-9_ ]+)?$");
+                if(value!=="" && !reg.test(value)){
+                    setError(true);
+                    setHelperText("Numeric ids separated by comma");
+                }else{
+                    setError(false);
+                    setHelperText(defaultHelperText)
+                }
+            }
+
             return (
                 <FormControl className={classes.formControl}>
                     <TextField
-                    id="tags"
-                    name="tags"
-                    label="Tags"
-                    variant="outlined"
-                    defaultValue=""
-                    helperText="tag1,tag2"
+                        id="tags"
+                        name="tags"
+                        label="Tags"
+                        variant="outlined"
+                        multiline
+                        rows={3}
+                        defaultValue=""
+                        error={error}
+                        helperText={helperText}
+                        onChange={validate}
+                        onBlur={validate}
                     />
                 </FormControl>
             )
@@ -496,71 +680,83 @@
 
         function Description() {
             const classes = useStyles();
+            const defaultHelperText = "Description for all files";
+            const [error, setError] = React.useState(false);
+            const [helperText, setHelperText] = React.useState(defaultHelperText);
+
+            const validate = () =>{
+                setError(false);
+            }
+
             return (
                 <FormControl className={classes.formControl}>
                     <TextField
                         id="description"
                         label="Description"
                         multiline
-                        rows={4}
+                        rows={3}
                         defaultValue="Files uploaded via RMSI"
                         variant="outlined"
+                        error={error}
+                        helperText={helperText}
+                        onChange={validate}
+                        onBlur={validate}
                     />
                 </FormControl>
             )
         }
 
-        function CSVForm(){
+        function CSVForm() {
             const classes = useStyles();
 
-            return(
+            return (
                 <Paper elevation={3}>
-                        <Grid
-                            container
-                            direction="column"
-                            justify="center"
-                            alignItems="center"
-                            className={classes.mainContainer}>
-                            <Grid item xs>
-                                <Heading/>
-                            </Grid>
-                            <Grid item xs>
-                                <Files />
-                            </Grid>
-                            <Grid item xs>
-                                <Territories />
-                            </Grid>
-                            <Grid item xs>
-                                <Category />
-                            </Grid>
-                            <Grid item xs>
-                                <MonitoringType />
-                            </Grid>
-                            <Grid item xs>
-                                <MatchRuleId />
-                            </Grid>
-                            <Grid item xs>
-                                <ReferenceDisabled />
-                            </Grid>
-                            <Grid item xs>
-                                <AllowedFBIds />
-                            </Grid>
-                            <Grid item xs>
-                                <AllowedIGIds />
-                            </Grid>
-                            <Grid item xs>
-                                <Tags />
-                            </Grid>
-                            <Grid item xs>
-                                <Description />
-                            </Grid>
-                            <Grid item xs>
-                                <Button variant="contained" color="primary" onClick={generateCSVFile}>
-                                    Export CSV
-                                </Button>
-                            </Grid>
+                    <Grid
+                        container
+                        direction="column"
+                        justify="center"
+                        alignItems="center"
+                        className={classes.mainContainer}>
+                        <Grid item xs>
+                            <Heading />
                         </Grid>
-                    </Paper>
+                        <Grid item xs>
+                            <Files />
+                        </Grid>
+                        <Grid item xs>
+                            <Territories />
+                        </Grid>
+                        <Grid item xs>
+                            <Category />
+                        </Grid>
+                        <Grid item xs>
+                            <MonitoringType />
+                        </Grid>
+                        <Grid item xs>
+                            <MatchRuleId />
+                        </Grid>
+                        <Grid item xs>
+                            <ReferenceDisabled />
+                        </Grid>
+                        <Grid item xs>
+                            <AllowedFBIds />
+                        </Grid>
+                        <Grid item xs>
+                            <AllowedIGIds />
+                        </Grid>
+                        <Grid item xs>
+                            <Tags />
+                        </Grid>
+                        <Grid item xs>
+                            <Description />
+                        </Grid>
+                        <Grid item xs>
+                            <Button variant="contained" color="primary" onClick={generateCSVFile}>
+                                Export CSV
+                                </Button>
+                        </Grid>
+                    </Grid>
+                </Paper>
             )
         }
 
@@ -568,50 +764,50 @@
             return <ListItem button component="a" {...props} />;
         }
 
-        function Help(){
+        function Help() {
             const classes = useStyles();
 
-            return(
+            return (
                 <Paper
-                className={classes.sideContainer}
-                elevation={3}>
-                <Container>
-                    <Typography variant="h6" className={classes.formTitle} gutterBottom>
-                        Useful links
+                    className={classes.sideContainer}
+                    elevation={3}>
+                    <Container>
+                        <Typography variant="h6" className={classes.formTitle} gutterBottom>
+                            Useful links
                     </Typography>
-                </Container>
-                <List component="nav" aria-label="main mailbox folders">
-                    <ListItemLink href="https://github.com/juanjoms-fb/rm-singestion/raw/main/RMSI%20Documentation.pdf">
-                        <ListItemIcon>
-                            <Icon className={classes.icon}>article</Icon>
-                        </ListItemIcon>
-                        <ListItemText primary="Documentation" />
-                    </ListItemLink>
-                    <ListItemLink href="mailto:oncall+rights_manager_scaled_ingestion@xmail.facebook.com">
-                        <ListItemIcon>
-                            <Icon className={classes.icon}>alternate_email</Icon>
-                        </ListItemIcon>
-                        <ListItemText primary="Support" />
-                    </ListItemLink>
-                    <ListItemLink href="https://www.ssh.com/ssh/keygen/">
-                        <ListItemIcon>
-                            <Icon className={classes.icon}>vpn_key</Icon>
-                        </ListItemIcon>
-                        <ListItemText primary="Generate Keys" />
-                    </ListItemLink>
-                    <ListItemLink href="https://developers.facebook.com/docs/rights-manager-video/csv-validator">
-                        <ListItemIcon>
-                            <Icon className={classes.icon}>done</Icon>
-                        </ListItemIcon>
-                        <ListItemText primary="CSV Validator" />
-                    </ListItemLink>
-                    <ListItemLink href="https://raw.githubusercontent.com/juanjoms-fb/rm-singestion/main/__complete__">
-                        <ListItemIcon>
-                            <Icon className={classes.icon}>upload_file</Icon>
-                        </ListItemIcon>
-                        <ListItemText primary="Completion Manifest" />
-                    </ListItemLink>
-                </List>
+                    </Container>
+                    <List component="nav" aria-label="main mailbox folders">
+                        <ListItemLink href="https://github.com/juanjoms-fb/rm-singestion/raw/main/RMSI%20Documentation.pdf">
+                            <ListItemIcon>
+                                <Icon className={classes.icon}>article</Icon>
+                            </ListItemIcon>
+                            <ListItemText primary="Documentation" />
+                        </ListItemLink>
+                        <ListItemLink href="mailto:oncall+rights_manager_scaled_ingestion@xmail.facebook.com">
+                            <ListItemIcon>
+                                <Icon className={classes.icon}>alternate_email</Icon>
+                            </ListItemIcon>
+                            <ListItemText primary="Support" />
+                        </ListItemLink>
+                        <ListItemLink href="https://www.ssh.com/ssh/keygen/">
+                            <ListItemIcon>
+                                <Icon className={classes.icon}>vpn_key</Icon>
+                            </ListItemIcon>
+                            <ListItemText primary="Generate Keys" />
+                        </ListItemLink>
+                        <ListItemLink href="https://developers.facebook.com/docs/rights-manager-video/csv-validator">
+                            <ListItemIcon>
+                                <Icon className={classes.icon}>done</Icon>
+                            </ListItemIcon>
+                            <ListItemText primary="CSV Validator" />
+                        </ListItemLink>
+                        <ListItemLink href="https://raw.githubusercontent.com/juanjoms-fb/rm-singestion/main/__complete__">
+                            <ListItemIcon>
+                                <Icon className={classes.icon}>upload_file</Icon>
+                            </ListItemIcon>
+                            <ListItemText primary="Completion Manifest" />
+                        </ListItemLink>
+                    </List>
                 </Paper>
             )
         }
@@ -622,14 +818,14 @@
             const classes = useStyles();
             return (
                 <Container className={classes.htmlBody}>
-                <Grid container spacing={1}>
-                    <Grid item xs={12} sm={8}>
-                        <CSVForm/>
+                    <Grid container spacing={1}>
+                        <Grid item xs={12} sm={8}>
+                            <CSVForm />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <Help />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <Help/>
-                    </Grid>
-                </Grid>
                 </Container>
             );
         }
