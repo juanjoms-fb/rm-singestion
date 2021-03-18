@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@material-ui/core@latest/umd/material-ui.production.min.js"crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 </head>
@@ -107,8 +108,16 @@
                 borderRadius: "4px",
             },
             filesButton:{
-                color: "blue",
-                maxWidth: "0",
+                display: "none",
+            },
+            filesLabel: {
+                border: "1px solid #ccc",
+                display: "inline-block",
+                padding: "6px 12px",
+                cursor: "pointer",
+            },
+            files: {
+                border: "none 0px",
             }
         }));
         /* ----- END: MUI Setup ----- */
@@ -138,36 +147,42 @@
             return fields[_field].default_value;
         }
 
-        const processFiles = () => {
-            console.log("Files selected...");
+        const getVideoTitle = (video) =>{
+            const index = video.lastIndexOf(".");
+            const title = video.substring(0, index);
+            let str = title.toLowerCase().split(' ');
+            for (var i = 0; i < str.length; i++) {
+                str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+            }
+            return str.join(' ');
+        }
+
+        const generateCSVContent = () => {
+            console.log("Generating CSV content");
             let values = {};
             let csvContent = "";
+
             for (const f in fields) {
                 values[f] = processFormField(f);
                 csvContent += fields[f].name + ",";
             }
             csvContent += "\n";
-            console.log("Form values: ", values);
-            console.log("CSV headings: ", csvContent);
-
-            var inp = document.getElementById("video_files");
-
-            for (let i = 0; i < inp.files.length; i++) {
-                let file = inp.files[i];
+            var videos = document.getElementById("video_files");
+            for (let i = 0; i < videos.files.length; i++) {
+                let file = videos.files[i];
                 values.filename = file.name;
-                values.title = file.name;
+                values.title = getVideoTitle(file.name);
                 for (const f in values) {
-                    csvContent += values[f] + ",";
+                    csvContent += "\""+values[f] + "\",";
                 }
                 csvContent += "\n";
-                console.log("File", file.name);
             }
-            console.log("CSV content: ", csvContent);
+            console.log("CSV content: \n", csvContent);
             return csvContent;
         }
 
-        const save = (csvContent) => {
-            console.log("Saving...");
+        const exportFile = (csvContent) => {
+            console.log("Exporting CSV file");
             let filename = "csv_file.csv";
             var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             if (navigator.msSaveBlob) { // IE 10+
@@ -185,13 +200,12 @@
                     document.body.removeChild(link);
                 }
             }
+            console.log("CSV file exported as ", filename);
         }
 
-        const exportCSV = () => {
-            console.log("Exporting CSV file...");
-            let csvContent = processFiles();
-            //TODO: Uncomment this line
-            //save(csvContent);
+        const generateCSVFile = () => {
+            const csvContent = generateCSVContent();
+            exportFile(csvContent);
         }
 
 
@@ -215,42 +229,54 @@
 
         function Files() {
             const classes = useStyles();
+            const [filesCount, setFilesCount] = React.useState(0);
+
+            const onChangeFiles = ()=>{
+                var videos = document.getElementById("video_files");
+                setFilesCount(videos.files.length)
+
+            }
+
             return (
                 <FormControl variant="outlined" className={classes.formControlOutlined}>
-                    <label for="video_files">Files:</label>
+                    <label for="video_files" className={classes.filesLabel}>Files: {filesCount}</label>
                     <input
                     type="file"
                     name="video_files"
                     id="video_files"
                     multiple
                     accept=".vid"
-                    className={classes.filesButton} />
+                    className={classes.filesButton}
+                    onChange={onChangeFiles}/>
                 </FormControl>
             )
         }
 
         function Territories() {
+            const classes = useStyles();
+            const [territoryName, setTerritoryName] = React.useState([]);
+            const [countries, setCountries] = React.useState({});
 
-            const COUNTRIES = {
-                WW: "World Wide",
-                AF: "Afghanistan",
-                AL: "Albania",
-                DZ: "Algeria",
-                AS: "American Samoa",
-                AD: "Andorra",
-                AO: "Angola",
-                AI: "Anguilla",
-                AQ: "Antarctica",
-                AG: "Antigua and Barbuda",
-                AR: "Argentina",
-                AM: "Armenia",
-                AW: "Aruba",
-                AU: "Australia",
-                AT: "Austria",
-                AZ: "Azerbaijan",
-            };
+            React.useEffect(() => {
+                async function getCountries() {
+                    const response = await fetch('https://raw.githubusercontent.com/juanjoms-fb/rm-singestion/main/Territories%20ISO%20Alpha%202.csv')
+                    const reader = response.body.getReader()
+                    const result = await reader.read() // raw array
+                    const decoder = new TextDecoder('utf-8')
+                    const csv = decoder.decode(result.value) // the csv text
+                    const results = Papa.parse(csv, { header: false }) // object with { data, errors, meta }
+                    const rows = results.data // array of objects
+                    let c = {}
+                    rows.forEach( e=>{
+                        c[e[0]] = e[1];
+                    })
+                    console.log(c);
+                    setCountries(c)
+                }
+                getCountries()
+            }, []) // [] means just do this once, after initial render
 
-            function getClassName(country) {
+            const getClassName = (country) => {
                 return (
                     territoryName.indexOf(country) === -1
                         ? classes.normalCountry
@@ -258,24 +284,23 @@
                 );
             }
 
-            const classes = useStyles();
-            const [territoryName, setTerritoryName] = React.useState([]);
-
             const handleChangeTerritories = (event) => {
                 setTerritoryName(event.target.value);
                 document.getElementById("territories").value = event.target.value;
             };
 
-            let countries = []
-            for (const country in COUNTRIES) {
-                countries.push(
-                    <MenuItem key={country} value={country}
-                        className={getClassName(country)}>
-                        {COUNTRIES[country]}
-                    </MenuItem>
-                );
+            const populateCountryList = () => {
+                let countryEntries = []
+                for (const country in countries) {
+                    countryEntries.push(
+                        <MenuItem key={country} value={country}
+                            className={getClassName(country)}>
+                            {countries[country]}
+                        </MenuItem>
+                    );
+                }
+                return countryEntries;
             }
-
 
             return (
                 <FormControl variant="outlined" className={classes.formControlOutlined}>
@@ -295,7 +320,7 @@
                         )}
                         MenuProps={MenuProps}
                     >
-                        {countries}
+                        {populateCountryList()}
                     </Select>
                     <input type="hidden" id="territories" name="territories"/>
                 </FormControl>
@@ -487,7 +512,7 @@
                                 <Description />
                             </Grid>
                             <Grid item xs>
-                                <Button variant="contained" color="primary" onClick={exportCSV}>
+                                <Button variant="contained" color="primary" onClick={generateCSVFile}>
                                     Export CSV
                                 </Button>
                             </Grid>
