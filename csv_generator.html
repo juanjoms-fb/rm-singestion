@@ -22,31 +22,37 @@
         /* ----- BEGIN: MUI Setup ----- */
         //Import MUI components
         const {
+            Box,
+            Button,
+            Checkbox,
+            Chip,
             colors,
+            Container,
+            createMuiTheme,
             CssBaseline,
+            DraftsIcon,
+            FormControl,
+            FormControlLabel,
+            FormHelperText,
+            Grid,
+            Icon,
+            Input,
+            InputLabel,
+            Link,
+            List,
+            ListItem,
+            ListItemIcon,
+            ListItemText,
+            makeStyles,
+            MenuItem,
+            MenuProps,
+            Paper,
+            Select,
+            SvgIcon,
+            TextField,
             ThemeProvider,
             Typography,
-            Container,
-            makeStyles,
-            createMuiTheme,
             useTheme,
-            Box,
-            SvgIcon,
-            Link,
-            Paper,
-            TextField,
-            Button,
-            Select,
-            FormControl,
-            FormHelperText,
-            InputLabel,
-            MenuItem,
-            FormControlLabel,
-            Checkbox,
-            Grid,
-            Input,
-            MenuProps,
-            Chip
         } = MaterialUI;
 
         // Create a MUI theme instance.
@@ -67,6 +73,7 @@
             },
         });
 
+        // Create styles/classes.
         const useStyles = makeStyles(theme => ({
             htmlBody:{
                 background: "#f5f5f5",
@@ -77,6 +84,10 @@
             mainContainer: {
                 margin: "20px",
                 padding: "20px"
+            },
+            sideContainer: {
+                margin: "20px",
+                padding: "10px"
             },
             formControl: {
                 margin: theme.spacing(1),
@@ -118,7 +129,10 @@
             },
             files: {
                 border: "none 0px",
-            }
+            },
+            icon: {
+                marginRight: theme.spacing.unit,
+            },
         }));
         /* ----- END: MUI Setup ----- */
 
@@ -143,7 +157,6 @@
             if (field !== null) {
                 return field.value
             }
-
             return fields[_field].default_value;
         }
 
@@ -208,7 +221,6 @@
             exportFile(csvContent);
         }
 
-
         const handleChange = (event) => {
             let event_id=event.target.name;
             document.getElementById(event_id).value = event.target.value;
@@ -239,12 +251,13 @@
 
             return (
                 <FormControl variant="outlined" className={classes.formControlOutlined}>
-                    <label for="video_files" className={classes.filesLabel}>Files: {filesCount}</label>
+                    <label for="video_files" className={classes.filesLabel}>Files *: {filesCount}</label>
                     <input
                     type="file"
                     name="video_files"
                     id="video_files"
                     multiple
+                    required
                     accept=".vid"
                     className={classes.filesButton}
                     onChange={onChangeFiles}/>
@@ -270,7 +283,6 @@
                     rows.forEach( e=>{
                         c[e[0]] = e[1];
                     })
-                    console.log(c);
                     setCountries(c)
                 }
                 getCountries()
@@ -304,10 +316,11 @@
 
             return (
                 <FormControl variant="outlined" className={classes.formControlOutlined}>
-                    <InputLabel id="territories-label">Territories</InputLabel>
+                    <InputLabel id="territories-label">Territories *</InputLabel>
                     <Select
                         labelId="territories-label"
                         multiple
+                        required
                         value={territoryName}
                         onChange={handleChangeTerritories}
                         input={<Input id="select-multiple-chip" />}
@@ -327,7 +340,6 @@
             )
         }
 
-
         function Category() {
             const classes = useStyles();
 
@@ -344,11 +356,12 @@
 
             return (
                 <FormControl variant="outlined" className={classes.formControl}>
-                    <InputLabel id="category-label">Category</InputLabel>
+                    <InputLabel id="category-label">Category *</InputLabel>
                     <Select
                         labelId="category-label"
                         id="category"
                         name="category"
+                        required
                         onChange={handleChange}
                     >
                         {categories}
@@ -373,11 +386,12 @@
 
             return (
                 <FormControl variant="outlined" className={classes.formControl}>
-                    <InputLabel id="monitoring-type-label">Monitoring Type</InputLabel>
+                    <InputLabel id="monitoring-type-label">Monitoring Type *</InputLabel>
                     <Select
                         labelId="monitoring-type-label"
                         id="monitoring_type"
                         name="monitoring_type"
+                        required
                         onChange={handleChange}
                     >
                         {monitoring_types}
@@ -416,7 +430,12 @@
             const classes = useStyles();
             return (
                 <FormControl className={classes.formControl}>
-                    <TextField id="match_rule_id" name="match_rule_id" label="match_rule_id" variant="outlined" />
+                    <TextField
+                    id="match_rule_id"
+                    name="match_rule_id"
+                    label="Match Rule Id"
+                    variant="outlined"
+                    required/>
                 </FormControl>
             )
         }
@@ -425,7 +444,14 @@
             const classes = useStyles();
             return (
                 <FormControl className={classes.formControl}>
-                    <TextField id="whitelisted_fb_ids" name="whitelisted_fb_ids" label="whitelisted_fb_ids" variant="outlined" />
+                    <TextField
+                    id="whitelisted_fb_ids"
+                    name="whitelisted_fb_ids"
+                    label="Allowed FB ids"
+                    variant="outlined"
+                    defaultValue=""
+                    helperText="id1,id2,..."
+                    />
                 </FormControl>
             )
         }
@@ -434,7 +460,14 @@
             const classes = useStyles();
             return (
                 <FormControl className={classes.formControl}>
-                    <TextField id="whitelisted_ig_ids" name="whitelisted_ig_ids" label="whitelisted_ig_ids" variant="outlined" />
+                    <TextField
+                    id="whitelisted_ig_ids"
+                    name="whitelisted_ig_ids"
+                    label="Allowed IG ids"
+                    variant="outlined"
+                    defaultValue=""
+                    helperText="id1,id2,..."
+                    />
                 </FormControl>
             )
         }
@@ -443,7 +476,14 @@
             const classes = useStyles();
             return (
                 <FormControl className={classes.formControl}>
-                    <TextField id="tags" name="tags" label="tags" variant="outlined" />
+                    <TextField
+                    id="tags"
+                    name="tags"
+                    label="Tags"
+                    variant="outlined"
+                    defaultValue=""
+                    helperText="tag1,tag2"
+                    />
                 </FormControl>
             )
         }
@@ -457,21 +497,18 @@
                         label="Description"
                         multiline
                         rows={4}
-                        defaultValue="Generic description for your files"
+                        defaultValue="Files uploaded via RMSI"
                         variant="outlined"
                     />
                 </FormControl>
             )
         }
-        /* ----- END: Form Components ----- */
 
-        /* ----- BEGIN: React Main App ----- */
-        function App() {
+        function CSVForm(){
             const classes = useStyles();
-            return (
-                <Container maxWidth="b" className={classes.htmlBody}>
-                <Container maxWidth="sm">
-                    <Paper elevation={3}>
+
+            return(
+                <Paper elevation={3}>
                         <Grid
                             container
                             direction="column"
@@ -518,7 +555,63 @@
                             </Grid>
                         </Grid>
                     </Paper>
+            )
+        }
+
+        function ListItemLink(props) {
+            return <ListItem button component="a" {...props} />;
+        }
+
+        function Help(){
+            const classes = useStyles();
+
+            return(
+                <Paper
+                className={classes.sideContainer}
+                elevation={3}>
+                <Container>
+                    <Typography variant="h6" className={classes.formTitle} gutterBottom>
+                        Useful links
+                    </Typography>
                 </Container>
+                <List component="nav" aria-label="main mailbox folders">
+                    <ListItemLink href="https://developers.facebook.com/docs/rights-manager-video/csv-validator">
+                        <ListItemIcon>
+                            <Icon className={classes.icon}>done</Icon>
+                        </ListItemIcon>
+                        <ListItemText primary="CSV Validator" />
+                    </ListItemLink>
+                    <ListItemLink href="https://github.com/juanjoms-fb/rm-singestion/raw/main/RMSI%20Documentation.pdf">
+                        <ListItemIcon>
+                            <Icon className={classes.icon}>article</Icon>
+                        </ListItemIcon>
+                        <ListItemText primary="Documentation" />
+                    </ListItemLink>
+                    <ListItemLink href="mailto:oncall+rights_manager_scaled_ingestion@xmail.facebook.com">
+                        <ListItemIcon>
+                            <Icon className={classes.icon}>alternate_email</Icon>
+                        </ListItemIcon>
+                        <ListItemText primary="Support" />
+                    </ListItemLink>
+                </List>
+                </Paper>
+            )
+        }
+        /* ----- END: Form Components ----- */
+
+        /* ----- BEGIN: React Main App ----- */
+        function App() {
+            const classes = useStyles();
+            return (
+                <Container className={classes.htmlBody}>
+                <Grid container spacing={1}>
+                    <Grid item xs={12} sm={8}>
+                        <CSVForm/>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <Help/>
+                    </Grid>
+                </Grid>
                 </Container>
             );
         }
