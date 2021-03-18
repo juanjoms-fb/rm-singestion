@@ -226,6 +226,7 @@
         const generateCSVFile = () => {
             const csvContent = generateCSVContent();
             exportFile(csvContent);
+            alert("Opening the generated CSV with a Spreadsheet editor may modify its format. Make sure to validate the file before uploading it.");
         }
 
         const handleChange = (event) => {
