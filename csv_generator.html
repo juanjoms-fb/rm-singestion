@@ -774,6 +774,46 @@
                     elevation={3}>
                     <Container>
                         <Typography variant="h6" className={classes.formTitle} gutterBottom>
+                            Help
+                    </Typography>
+                    </Container>
+                    <div>
+                        <List dense={true}>
+                            <ListItem>
+                                <ListItemText
+                                    primary="Make sure to have the match rule id before proceeding with the CSV."
+                                />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText
+                                    primary="Use WW (World Wide) to protect videos all over the world."
+                                />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText
+                                    primary="Make sure to validate the CSV file before uploading it."
+                                />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText
+                                    primary="Upload order: Upload videos, wait, upload CSV, wait, upload completion manifest."
+                                />
+                            </ListItem>
+                        </List>
+                    </div>
+                </Paper>
+            )
+        }
+
+        function UsefulLinks() {
+            const classes = useStyles();
+
+            return (
+                <Paper
+                    className={classes.sideContainer}
+                    elevation={3}>
+                    <Container>
+                        <Typography variant="h6" className={classes.formTitle} gutterBottom>
                             Useful links
                     </Typography>
                     </Container>
@@ -824,7 +864,14 @@
                             <CSVForm />
                         </Grid>
                         <Grid item xs={12} sm={4}>
-                            <Help />
+                            <Grid container direction="column" spacing={1}>
+                                <Grid item xs={12} sm={12} >
+                                    <Help />
+                                </Grid>
+                                <Grid item xs={12} sm={12}>
+                                    <UsefulLinks />
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Container>
