@@ -140,6 +140,14 @@
             icon: {
                 marginRight: theme.spacing.unit,
             },
+            timestamp:{
+                color: theme.palette.primary.main,
+                textDecoration: "underline",
+            },
+            hiddenTimestamp:{
+                color: theme.palette.primary.main,
+                border: "none",
+            }
         }));
         /* ----- END: MUI Setup ----- */
 
@@ -243,6 +251,10 @@
                 setError(false);
                 setHelperText("")
             }
+        }
+
+        const getTimestamp=()=>{
+            return Date.now()
         }
 
         /* ----- END: CSV Helpers ----- */
@@ -765,8 +777,21 @@
             return <ListItem button component="a" {...props} />;
         }
 
-        function Help() {
+        function Instructions() {
             const classes = useStyles();
+            const [currentTimestamp, setCurrentTimestamp] = React.useState(getTimestamp())
+
+            const handleTimestampClick = ()=>{
+                let ts = getTimestamp();
+                setCurrentTimestamp(ts);
+                const el = document.createElement('textarea');
+                el.value = ts;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                console.log("Copied the text: " + ts);
+            }
 
             return (
                 <Paper
@@ -774,29 +799,68 @@
                     elevation={3}>
                     <Container>
                         <Typography variant="h6" className={classes.formTitle} gutterBottom>
-                            Help
+                            Instructions
                     </Typography>
                     </Container>
                     <div>
                         <List dense={true}>
                             <ListItem>
                                 <ListItemText
-                                    primary="Make sure to have the match rule id before proceeding with the CSV."
+                                    primary={
+                                        <React.Fragment>
+                                            1. If you haven't done it yet, create a <b>match rule id</b> in <a href="https://business.facebook.com/creatorstudio?tab=rights_manager_match_rules">Creator Studio</a>.
+                                        </React.Fragment>
+                                    }
                                 />
                             </ListItem>
                             <ListItem>
                                 <ListItemText
-                                    primary="Use WW (World Wide) to protect videos all over the world."
+                                    primary={
+                                        <React.Fragment>
+                                            2. Create a <b>new directory</b> and name it with the current UNIX timestamp (
+                                            <span
+                                            onClick={handleTimestampClick}
+                                            className={classes.timestamp}
+                                            id="timestamp"
+                                            >
+                                                <i>{currentTimestamp}</i>
+                                            </span>
+                                            ). Place all your videos here.
+                                            <input type="input" id="tsvalue" className={classes.hiddenTimestamp}/>
+                                        </React.Fragment>
+                                    }
                                 />
                             </ListItem>
                             <ListItem>
                                 <ListItemText
-                                    primary="Make sure to validate the CSV file before uploading it."
+                                    primary={
+                                        <React.Fragment>
+                                            3. <b>Fill this form</b>.
+                                            <br/> - Select the <b>videos</b> to be included in the CSV.
+                                            <br/> - Indicate the <b>territories</b> where they will be protected, the <b>category</b> of the videos, the type of <b>monitoring</b> and the <b>match rule</b> id from step 1.
+                                            <br/> - Optionally you can provide FB and/or IG <b>ids</b> that are allowed to use your videos, and <b>tags</b> for your videos.
+                                            <br/> - Add a <b>description</b> to be applied for your videos
+                                            <br/> - Click the <b>"Export CSV"</b> button and wait for your file to be downloaded.
+                                        </React.Fragment>
+                                    }
                                 />
                             </ListItem>
                             <ListItem>
                                 <ListItemText
-                                    primary="Upload order: Upload videos, wait, upload CSV, wait, upload completion manifest."
+                                    primary={
+                                        <React.Fragment>
+                                            <b><a href="https://developers.facebook.com/docs/rights-manager-video/csv-validator">Validate your CSV</a></b> file before uploading it.
+                                        </React.Fragment>
+                                    }
+                                />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText
+                                    primary={
+                                        <React.Fragment>
+                                            <b>Upload order:</b> Start with the <i>videos</i> and wait for them to be completely uploaded. Then proceed with the <i>CSV</i> and after it is transferred upload the <i><a href="https://raw.githubusercontent.com/juanjoms-fb/rm-singestion/main/__complete__">completion manifest</a></i>.
+                                        </React.Fragment>
+                                    }
                                 />
                             </ListItem>
                         </List>
@@ -866,7 +930,7 @@
                         <Grid item xs={12} sm={4}>
                             <Grid container direction="column" spacing={1}>
                                 <Grid item xs={12} sm={12} >
-                                    <Help />
+                                    <Instructions />
                                 </Grid>
                                 <Grid item xs={12} sm={12}>
                                     <UsefulLinks />
