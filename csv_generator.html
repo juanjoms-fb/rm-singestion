@@ -14,6 +14,27 @@
     <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <style>
+        a:link {
+            color: #556cd6;
+          }
+
+          /* visited link */
+          a:visited {
+            color: #556cd6;
+          }
+
+          /* mouse over link */
+          a:hover {
+            color: #5657D6;
+            font-weight: bold;
+          }
+
+          /* selected link */
+          a:active {
+            color: #556cd6;
+          }
+    </style>
 </head>
 
 <body>
@@ -52,6 +73,7 @@
             SvgIcon,
             TextField,
             ThemeProvider,
+            Tooltip,
             Typography,
             useTheme,
         } = MaterialUI;
@@ -143,11 +165,12 @@
             timestamp:{
                 color: theme.palette.primary.main,
                 textDecoration: "underline",
+                cursor: "pointer",
+                '&:hover': {
+                    color: "#5657D6",
+                    fontWeight: "bold",
+                }
             },
-            hiddenTimestamp:{
-                color: theme.palette.primary.main,
-                border: "none",
-            }
         }));
         /* ----- END: MUI Setup ----- */
 
@@ -780,6 +803,12 @@
         function Instructions() {
             const classes = useStyles();
             const [currentTimestamp, setCurrentTimestamp] = React.useState(getTimestamp())
+            const [open, setOpen] = React.useState(false);
+            const [tooltipText, setTooltipText] = React.useState("");
+
+            const handleTooltipClose = () => {
+                setOpen(false);
+            };
 
             const handleTimestampClick = ()=>{
                 let ts = getTimestamp();
@@ -791,6 +820,8 @@
                 document.execCommand('copy');
                 document.body.removeChild(el);
                 console.log("Copied the text: " + ts);
+                setTooltipText("Copied "+ts)
+                setOpen(true);
             }
 
             return (
@@ -808,7 +839,7 @@
                                 <ListItemText
                                     primary={
                                         <React.Fragment>
-                                            1. If you haven't done it yet, create a <b>match rule id</b> in <a href="https://business.facebook.com/creatorstudio?tab=rights_manager_match_rules">Creator Studio</a>.
+                                            <b>1.</b> If you haven't done it yet, create a <b>match rule id</b> in <a href="https://business.facebook.com/creatorstudio?tab=rights_manager_match_rules">Creator Studio</a>.
                                         </React.Fragment>
                                     }
                                 />
@@ -817,16 +848,24 @@
                                 <ListItemText
                                     primary={
                                         <React.Fragment>
-                                            2. Create a <b>new directory</b> and name it with the current UNIX timestamp (
+                                            <b>2.</b> Create a <b>new directory</b> and name it with the current UNIX timestamp (
                                             <span
                                             onClick={handleTimestampClick}
                                             className={classes.timestamp}
                                             id="timestamp"
                                             >
+                                                <Tooltip
+                                                    PopperProps={{
+                                                    disablePortal: true,
+                                                    }}
+                                                    onClose={handleTooltipClose}
+                                                    open={open}
+                                                    title={tooltipText}
+                                                >
                                                 <i>{currentTimestamp}</i>
+                                            </Tooltip>
                                             </span>
                                             ). Place all your videos here.
-                                            <input type="input" id="tsvalue" className={classes.hiddenTimestamp}/>
                                         </React.Fragment>
                                     }
                                 />
@@ -835,7 +874,7 @@
                                 <ListItemText
                                     primary={
                                         <React.Fragment>
-                                            3. <b>Fill this form</b>.
+                                            <b>3.</b> <b>Fill this form:</b>.
                                             <br/> - Select the <b>videos</b> to be included in the CSV.
                                             <br/> - Indicate the <b>territories</b> where they will be protected, the <b>category</b> of the videos, the type of <b>monitoring</b> and the <b>match rule</b> id from step 1.
                                             <br/> - Optionally you can provide FB and/or IG <b>ids</b> that are allowed to use your videos, and <b>tags</b> for your videos.
@@ -849,7 +888,7 @@
                                 <ListItemText
                                     primary={
                                         <React.Fragment>
-                                            <b><a href="https://developers.facebook.com/docs/rights-manager-video/csv-validator">Validate your CSV</a></b> file before uploading it.
+                                        <b>4.</b> <a href="https://developers.facebook.com/docs/rights-manager-video/csv-validator">Validate</a> your CSV file.
                                         </React.Fragment>
                                     }
                                 />
@@ -858,7 +897,7 @@
                                 <ListItemText
                                     primary={
                                         <React.Fragment>
-                                            <b>Upload order:</b> Start with the <i>videos</i> and wait for them to be completely uploaded. Then proceed with the <i>CSV</i> and after it is transferred upload the <i><a href="https://raw.githubusercontent.com/juanjoms-fb/rm-singestion/main/__complete__">completion manifest</a></i>.
+                                            <b>5.</b> <b>Upload your files:</b> Start with the <b>videos</b> and wait for all of them to be completely uploaded. Then proceed with the <b>CSV file</b> and after it is transferred upload the <b>completion manifest</b>.
                                         </React.Fragment>
                                     }
                                 />
@@ -905,12 +944,6 @@
                                 <Icon className={classes.icon}>done</Icon>
                             </ListItemIcon>
                             <ListItemText primary="CSV Validator" />
-                        </ListItemLink>
-                        <ListItemLink href="https://raw.githubusercontent.com/juanjoms-fb/rm-singestion/main/__complete__">
-                            <ListItemIcon>
-                                <Icon className={classes.icon}>upload_file</Icon>
-                            </ListItemIcon>
-                            <ListItemText primary="Completion Manifest" />
                         </ListItemLink>
                     </List>
                 </Paper>
