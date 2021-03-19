@@ -17,23 +17,52 @@
     <style>
         a:link {
             color: #556cd6;
-          }
+        }
 
-          /* visited link */
-          a:visited {
+        /* visited link */
+        a:visited {
             color: #556cd6;
-          }
+        }
 
-          /* mouse over link */
-          a:hover {
+        /* mouse over link */
+        a:hover {
             color: #5657D6;
             font-weight: bold;
-          }
+        }
 
-          /* selected link */
-          a:active {
+        /* selected link */
+        a:active {
             color: #556cd6;
-          }
+        }
+
+        .skadjhak {
+            left: 0;
+            right: 0;
+            bottom: 0;
+            content: "";
+            position: absolute;
+            transform: scaleX(0);
+            transition: transform 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+            border-bottom: 2px solid #556cd6;
+            pointer-events: none;
+        }
+
+        .MuiInput-underline {
+            border-bottom: 0px solid white;
+        }
+
+        .MuiInput-underline:before {
+            border-bottom: 1px solid white;
+        }
+
+        .MuiInput-underline:before {
+            border-bottom: 1px solid white;
+        }
+
+        .MuiInput-underline:after {
+            border-bottom: 1px solid white;
+
+        }
     </style>
 </head>
 
@@ -140,6 +169,15 @@
                 maxWidth: 240,
                 border: "1px solid lightGray",
                 borderRadius: "4px",
+                color: "lightGray"
+            },
+            formControlOutlinedError:{
+                margin: theme.spacing(1),
+                minWidth: 240,
+                maxWidth: 240,
+                border: "1px solid red",
+                borderRadius: "4px",
+                color: "red"
             },
             filesControlOutlined: {
                 margin: theme.spacing(1),
@@ -147,8 +185,8 @@
                 maxWidth: 240,
                 border: "1px solid lightGray",
                 borderRadius: "4px",
-                paddingLeft:"10px",
-                paddingTop:"10px",
+                paddingLeft: "10px",
+                paddingTop: "10px",
                 fontSize: "1rem",
                 fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
                 color: "rgba(0, 0, 0, 0.54)",
@@ -174,7 +212,7 @@
             icon: {
                 marginRight: theme.spacing.unit,
             },
-            timestamp:{
+            timestamp: {
                 color: theme.palette.primary.main,
                 textDecoration: "underline",
                 cursor: "pointer",
@@ -183,6 +221,16 @@
                     fontWeight: "bold",
                 }
             },
+            territoriesSelect: {
+                background: "white",
+            },
+            territoriesDeleteIcon: {
+                cursor: "pointer",
+                marginLeft: theme.spacing(22),
+                '&:hover': {
+                    color: "#5657D6",
+                }
+            }
         }));
         /* ----- END: MUI Setup ----- */
 
@@ -277,18 +325,18 @@
             document.getElementById(event_id).value = event.target.value;
         };
 
-        const validate = () =>{
+        const validate = () => {
             const value = document.getElementById("video_files").value
-            if(value===null || value==="" || value===undefined || value.length===0){
+            if (value === null || value === "" || value === undefined || value.length === 0) {
                 setError(true);
                 setHelperText("You must select at least 1 video file");
-            }else{
+            } else {
                 setError(false);
                 setHelperText("")
             }
         }
 
-        const getTimestamp=()=>{
+        const getTimestamp = () => {
             return Date.now()
         }
 
@@ -311,12 +359,12 @@
             const [error, setError] = React.useState(false);
             const [helperText, setHelperText] = React.useState("");
 
-            const validate = () =>{
+            const validate = () => {
                 const value = document.getElementById("video_files").value
-                if(value===null || value==="" || value===undefined || value.length===0){
+                if (value === null || value === "" || value === undefined || value.length === 0) {
                     setError(true);
                     setHelperText("You must select at least 1 video file");
-                }else{
+                } else {
                     setError(false);
                     setHelperText("")
                 }
@@ -344,7 +392,7 @@
                         accept=".3g2,.3gp,.3gpp,.asf,.avi,.dat,.divx,.dv,.f4v,.flv,.gif,.m2ts,.m4v,.mkv,.mod,.mov,.mp4,.mpe,.mpeg,.mpeg4,.mpg,.mts,.nsv,.ogm,.ogv,.qt,.tod,.ts,.vob,.wmv"
                         className={classes.filesButton}
                         onChange={onChangeFiles}
-                        onBlur={validate}/>
+                        onBlur={validate} />
                     <FormHelperText>{helperText}</FormHelperText>
                 </FormControl>
             )
@@ -383,20 +431,23 @@
                 );
             }
 
-            const validate=()=>{
+            const validate = () => {
                 const value = document.getElementById("territories").value
-                if(value===null || value==="" || value===undefined || value.length===0){
+                if (value === null || value === "" || value === undefined || value.length === 0) {
                     setError(true);
                     setHelperText("You must select at least 1 territory");
-                }else{
+                } else {
                     setError(false);
                     setHelperText("")
                 }
             }
 
             const handleChangeTerritories = (event) => {
-                const newTerritories = event.target.value;
-                if (newTerritories.length === 0 || newTerritories===undefined) {
+                let newTerritories = event.target.value;
+                if (newTerritories.includes("WW")) {
+                    newTerritories = ["WW"]
+                }
+                if (newTerritories.length === 0 || newTerritories === undefined) {
                     setError(true);
                     setHelperText("You must select at least 1 territory");
                 }
@@ -418,13 +469,35 @@
                 return countryEntries;
             }
 
+            const clean = () => {
+                let e={
+                    target:{
+                        value:[]
+                    }
+                };
+                handleChangeTerritories(e);
+            }
+
+            const formControlClass = ()=>{
+                return (
+                    error ?
+                    classes.formControlOutlinedError:
+                    classes.formControlOutlined
+                )
+            }
+
             return (
-                <FormControl variant="outlined" className={classes.formControlOutlined}>
+                <FormControl variant="outlined"
+                className={formControlClass()}
+                //className={classes.formControlOutlinedError}
+                >
                     <InputLabel id="territories-label">Territories *</InputLabel>
                     <Select
                         labelId="territories-label"
                         multiple
                         required
+                        disableUnderline
+                        className={classes.territoriesSelect}
                         error={error}
                         value={territoryName}
                         onChange={handleChangeTerritories}
@@ -441,6 +514,14 @@
                     >
                         {populateCountryList()}
                     </Select>
+                    {
+                        territoryName.length>0?
+                        <Container fixed>
+                                <Icon className={classes.territoriesDeleteIcon} onClick={clean}>delete</Icon>
+                        </Container>
+                        :
+                        <></>
+                    }
                     <FormHelperText>{helperText}</FormHelperText>
                     <input type="hidden" id="territories" name="territories" />
                 </FormControl>
@@ -458,7 +539,7 @@
                 WEB: "Web",
             }
 
-            const populateCategoriesList=()=>{
+            const populateCategoriesList = () => {
                 let categories = []
                 for (const category_key in CATEGORY) {
                     categories.push(<MenuItem value={category_key}>{CATEGORY[category_key]}</MenuItem>)
@@ -466,12 +547,12 @@
                 return categories;
             }
 
-            const validate=()=>{
+            const validate = () => {
                 const value = document.getElementById("category").value
-                if(value===null || value==="" || value===undefined){
+                if (value === null || value === "" || value === undefined) {
                     setError(true);
                     setHelperText("You must select a category");
-                }else{
+                } else {
                     setError(false);
                     setHelperText("")
                 }
@@ -513,7 +594,7 @@
                 AUDIO_ONLY: "Audio only",
             }
 
-            const populateTypeList = ()=>{
+            const populateTypeList = () => {
                 let monitoring_types = []
                 for (const mtype in MONITORING_TYPE) {
                     monitoring_types.push(<MenuItem value={mtype}>{MONITORING_TYPE[mtype]}</MenuItem>)
@@ -521,12 +602,12 @@
                 return monitoring_types;
             }
 
-            const validate=()=>{
+            const validate = () => {
                 const value = document.getElementById("monitoring_type").value
-                if(value===null || value==="" || value===undefined){
+                if (value === null || value === "" || value === undefined) {
                     setError(true);
                     setHelperText("You must select a type");
-                }else{
+                } else {
                     setError(false);
                     setHelperText("")
                 }
@@ -588,15 +669,15 @@
             const [error, setError] = React.useState(false);
             const [helperText, setHelperText] = React.useState("");
 
-            const validate = () =>{
+            const validate = () => {
                 const value = document.getElementById("match_rule_id").value
                 var reg = new RegExp('^\\d+$');
-                if(value===null || value==="" || value===undefined || value.length===0 ||
+                if (value === null || value === "" || value === undefined || value.length === 0 ||
                     !reg.test(value)
-                ){
+                ) {
                     setError(true);
                     setHelperText("Rule id must numeric");
-                }else{
+                } else {
                     setError(false);
                     setHelperText("")
                 }
@@ -624,13 +705,13 @@
             const [error, setError] = React.useState(false);
             const [helperText, setHelperText] = React.useState(defaultHelperText);
 
-            const validate = () =>{
+            const validate = () => {
                 const value = document.getElementById("whitelisted_fb_ids").value
                 var reg = new RegExp("^(?:[0-9]+,)*[0-9]+(?:\.[0-9]+)?$");
-                if(value!=="" && !reg.test(value)){
+                if (value !== "" && !reg.test(value)) {
                     setError(true);
                     setHelperText("Numeric ids separated by comma");
-                }else{
+                } else {
                     setError(false);
                     setHelperText(defaultHelperText)
                 }
@@ -661,13 +742,13 @@
             const [error, setError] = React.useState(false);
             const [helperText, setHelperText] = React.useState(defaultHelperText);
 
-            const validate = () =>{
+            const validate = () => {
                 const value = document.getElementById("whitelisted_ig_ids").value
                 var reg = new RegExp("^(?:[0-9]+,)*[0-9]+(?:\.[0-9]+)?$");
-                if(value!=="" && !reg.test(value)){
+                if (value !== "" && !reg.test(value)) {
                     setError(true);
                     setHelperText("Numeric ids separated by comma");
-                }else{
+                } else {
                     setError(false);
                     setHelperText(defaultHelperText)
                 }
@@ -698,13 +779,13 @@
             const [error, setError] = React.useState(false);
             const [helperText, setHelperText] = React.useState(defaultHelperText);
 
-            const validate = () =>{
+            const validate = () => {
                 const value = document.getElementById("tags").value
                 var reg = new RegExp("^(?:[a-zA-Z0-9_ ]+,)*[a-zA-Z0-9_ ]+(?:\.[a-zA-Z0-9_ ]+)?$");
-                if(value!=="" && !reg.test(value)){
+                if (value !== "" && !reg.test(value)) {
                     setError(true);
                     setHelperText("Numeric ids separated by comma");
-                }else{
+                } else {
                     setError(false);
                     setHelperText(defaultHelperText)
                 }
@@ -735,7 +816,7 @@
             const [error, setError] = React.useState(false);
             const [helperText, setHelperText] = React.useState(defaultHelperText);
 
-            const validate = () =>{
+            const validate = () => {
                 setError(false);
             }
 
@@ -825,7 +906,7 @@
                 setOpen(false);
             };
 
-            const handleTimestampClick = ()=>{
+            const handleTimestampClick = () => {
                 let ts = getTimestamp();
                 setCurrentTimestamp(ts);
                 const el = document.createElement('textarea');
@@ -835,7 +916,7 @@
                 document.execCommand('copy');
                 document.body.removeChild(el);
                 console.log("Copied the text: " + ts);
-                setTooltipText("Copied "+ts)
+                setTooltipText("Copied " + ts)
                 setOpen(true);
             }
 
@@ -865,20 +946,20 @@
                                         <React.Fragment>
                                             <b>2.</b> Create a <b>new directory</b> and name it with the current UNIX timestamp (
                                             <span
-                                            onClick={handleTimestampClick}
-                                            className={classes.timestamp}
-                                            id="timestamp"
+                                                onClick={handleTimestampClick}
+                                                className={classes.timestamp}
+                                                id="timestamp"
                                             >
                                                 <Tooltip
                                                     PopperProps={{
-                                                    disablePortal: true,
+                                                        disablePortal: true,
                                                     }}
                                                     onClose={handleTooltipClose}
                                                     open={open}
                                                     title={tooltipText}
                                                 >
-                                                <i>{currentTimestamp}</i>
-                                            </Tooltip>
+                                                    <i>{currentTimestamp}</i>
+                                                </Tooltip>
                                             </span>
                                             ). Place all your videos here.
                                         </React.Fragment>
@@ -890,11 +971,11 @@
                                     primary={
                                         <React.Fragment>
                                             <b>3.</b> <b>Fill this form:</b>.
-                                            <br/> - Select the <b>videos</b> to be included in the CSV.
-                                            <br/> - Indicate the <b>territories</b> where they will be protected, the <b>category</b> of the videos, the type of <b>monitoring</b> and the <b>match rule</b> id from step 1.
-                                            <br/> - Optionally you can provide FB and/or IG <b>ids</b> that are allowed to use your videos, and <b>tags</b> for your videos.
-                                            <br/> - Add a <b>description</b> to be applied for your videos
-                                            <br/> - Click the <b>"Export CSV"</b> button and wait for your file to be downloaded.
+                                            <br /> - Select the <b>videos</b> to be included in the CSV.
+                                            <br /> - Indicate the <b>territories</b> where they will be protected, the <b>category</b> of the videos, the type of <b>monitoring</b> and the <b>match rule</b> id from step 1.
+                                            <br /> - Optionally you can provide FB and/or IG <b>ids</b> that are allowed to use your videos, and <b>tags</b> for your videos.
+                                            <br /> - Add a <b>description</b> to be applied for your videos
+                                            <br /> - Click the <b>"Export CSV"</b> button and wait for your file to be downloaded.
                                         </React.Fragment>
                                     }
                                 />
@@ -903,7 +984,7 @@
                                 <ListItemText
                                     primary={
                                         <React.Fragment>
-                                        <b>4.</b> <a href="https://developers.facebook.com/docs/rights-manager-video/csv-validator">Validate</a> your CSV file.
+                                            <b>4.</b> <a href="https://developers.facebook.com/docs/rights-manager-video/csv-validator">Validate</a> your CSV file.
                                         </React.Fragment>
                                     }
                                 />
@@ -1001,6 +1082,7 @@
         /* ----- END: React Main App ----- */
 
     </script>
+
 </body>
 
 </html>
