@@ -141,11 +141,23 @@
                 border: "1px solid lightGray",
                 borderRadius: "4px",
             },
+            filesControlOutlined: {
+                margin: theme.spacing(1),
+                minWidth: 240,
+                maxWidth: 240,
+                border: "1px solid lightGray",
+                borderRadius: "4px",
+                paddingLeft:"10px",
+                paddingTop:"10px",
+                fontSize: "1rem",
+                fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+                color: "rgba(0, 0, 0, 0.54)",
+
+            },
             filesButton: {
                 display: "none",
             },
             filesLabel: {
-                border: "1px solid #ccc",
                 display: "inline-block",
                 padding: "6px 12px",
                 cursor: "pointer",
@@ -317,9 +329,12 @@
             }
 
             return (
-                <FormControl variant="outlined" className={classes.formControlOutlined}>
+                <FormControl variant="outlined" className={classes.filesControlOutlined}>
+                    Videos *: {filesCount} files selected
+                    <br />
                     <label for="video_files" className={classes.filesLabel} onBlur={validate}>
-                        Files *<br /> {filesCount}</label>
+                        <font className="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary">Select </font>
+                    </label>
                     <input
                         type="file"
                         name="video_files"
