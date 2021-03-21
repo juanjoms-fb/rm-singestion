@@ -34,35 +34,6 @@
         a:active {
             color: #556cd6;
         }
-
-        .skadjhak {
-            left: 0;
-            right: 0;
-            bottom: 0;
-            content: "";
-            position: absolute;
-            transform: scaleX(0);
-            transition: transform 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
-            border-bottom: 2px solid #556cd6;
-            pointer-events: none;
-        }
-
-        .MuiInput-underline {
-            border-bottom: 0px solid white;
-        }
-
-        .MuiInput-underline:before {
-            border-bottom: 1px solid white;
-        }
-
-        .MuiInput-underline:before {
-            border-bottom: 1px solid white;
-        }
-
-        .MuiInput-underline:after {
-            border-bottom: 1px solid white;
-
-        }
     </style>
 </head>
 
@@ -190,7 +161,18 @@
                 fontSize: "1rem",
                 fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
                 color: "rgba(0, 0, 0, 0.54)",
-
+            },
+            filesControlOutlinedError: {
+                margin: theme.spacing(1),
+                minWidth: 240,
+                maxWidth: 240,
+                border: "1px solid red",
+                borderRadius: "4px",
+                paddingLeft: "10px",
+                paddingTop: "10px",
+                fontSize: "1rem",
+                fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+                color: "rgba(0, 0, 0, 0.54)",
             },
             filesButton: {
                 display: "none",
@@ -376,12 +358,23 @@
                 validate()
             }
 
+            const formControlClass = ()=>{
+                return (
+                    error ?
+                    classes.filesControlOutlinedError:
+                    classes.filesControlOutlined
+                )
+            }
+
             return (
                 <FormControl variant="outlined" className={classes.filesControlOutlined}>
                     Videos *: {filesCount} files selected
                     <br />
                     <label for="video_files" className={classes.filesLabel} onBlur={validate}>
-                        <font className="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary">Select </font>
+                        <font
+                        className="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary fileSelectButton">
+                        Select
+                        </font>
                     </label>
                     <input
                         type="file"
@@ -1082,6 +1075,12 @@
         /* ----- END: React Main App ----- */
 
     </script>
+
+    <style>
+        .fileSelectButton{
+            width: 100%;
+        }
+    </style>
 
 </body>
 
